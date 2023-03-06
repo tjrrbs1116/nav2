@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="2">
+  <name>piot_can_control</name>
+  <version>1.0.0</version>
+  <description>The piot_can_control package</description>
+  <maintainer email="rkd1037@piot.co.kr">piot</maintainer>
+  <license>Apache License 2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <build_depend>rclcpp</build_depend>
+
+  <exec_depend>rclcpp</exec_depend>
+  <!--exec_depend>piot_can_msgs</exec_depend-->
+  
+  <depend>piot_can_msgs</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
