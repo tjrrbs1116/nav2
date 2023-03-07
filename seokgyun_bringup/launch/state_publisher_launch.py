@@ -12,7 +12,7 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
-    urdf_file_name = 'piot.urdf'
+    urdf_file_name = 'piot_copy.urdf'
 
     print("urdf_file_name : {}".format(urdf_file_name))
 
