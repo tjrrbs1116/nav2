@@ -96,6 +96,7 @@ def generate_launch_description():
         ),
         launch_arguments={'world': world}.items()
     ) 
+
     start_gazebo_client_cmd = ExecuteProcess(
 
         cmd=['gzclient'],
@@ -109,13 +110,14 @@ def generate_launch_description():
             parameters=[rsp_params, {'use_sim_time': use_sim_time}],
             arguments=[urdf])
 
+
     # joint_state_publisher_node = Node(
-    #     package='joint_state_publisher',
-    #     executable='joint_state_publisher',
-    #     name='joint_state_publisher'
-    #     parameters=[rsp_params]
-    #     arguments[urdf])
-    
+    #         package='joint_state_publisher',
+    #         executable='joint_state_publisher',
+    #         name='joint_state_publisher',
+    #         parameters=[rsp_params, {'use_sim_time': use_sim_time}],
+    #         arguments=[urdf])
+    #         # condition=launch.conditions.UnlessCondition(LaunchConfiguration('gui'))
 
     localization_cmd2 =  Node(
             package='robot_localization',
@@ -134,7 +136,7 @@ def generate_launch_description():
     ld.add_action(start_gazebo_spawner_cmd)
     ld.add_action(robot_state_publisher_cmd)
     #ld.add_action(start_gazebo_server_cmd)
-    # ld.add_action(joint_state_publisher_node)
+    #ld.add_action(joint_state_publisher_node)
     ld.add_action(gzserver_cmd)
     ld.add_action(start_gazebo_client_cmd)
     ld.add_action(localization_cmd2)
