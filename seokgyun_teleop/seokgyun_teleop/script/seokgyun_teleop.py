@@ -5,7 +5,7 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import Bool
 import os, sys, select
 from piot_can_msgs.msg import CtrlCmd, CtrlFb ,SteeringCtrlCmd,FrontAngleFreeCtrlCmd,RearAngleFreeCtrlCmd,FrontVelocityFreeCtrlCmd,RearVelocityFreeCtrlCmd
-
+import math
 
 if os.name == 'nt':
 	import msvcrt
@@ -135,7 +135,7 @@ class robot:
 		self.target_free_cmd_velocity_rr = 0.0
 		self.control_free_cmd_velocity_lr = 0.0
 		self.control_free_cmd_velocity_rr = 0.0
-
+		self.gear =1
 
 	def e_stop(self):
 		self.target_linear_x_vel   = 0.0
@@ -164,13 +164,18 @@ def main():
 		settings = termios.tcgetattr(sys.stdin)
 
 	rclpy.init()
-	
+
 	qos = QoSProfile(depth=10)
 	node = rclpy.create_node('seokgyun_teleop_node')
 	robot_ = robot()
-	cmd_vel_pub = node.create_publisher( Twist, 'cmd_vel', qos)
+	# cmd_vel_pub = node.create_publisher( Twist, 'cmd_vel', qos)
+	ctrl_cmd_pub = node.create_publisher (CtrlCmd, 'ctrl_cmd', qos)
 	cmd_steering_pub = node.create_publisher (SteeringCtrlCmd, 'steering_ctrl_cmd', qos)
-	mode_pub = node.create_publisher( Bool, 'mode', qos)
+	faf_cmd_pub = node.create_publisher (FrontAngleFreeCtrlCmd, 'front_angle_free_ctrl_cmd', qos)
+	raf_cmd_pub = node.create_publisher (RearAngleFreeCtrlCmd, 'rear_angle_free_ctrl_cmd', qos)
+	fvf_cmd_pub = node.create_publisher (FrontVelocityFreeCtrlCmd, 'front_velocity_free_ctrl_cmd', qos)
+	rvf_cmd_pub = node.create_publisher (RearVelocityFreeCtrlCmd, 'rear_velocity_free_ctrl_cmd', qos)
+	# mode_pub = node.create_publisher( Bool, 'mode', qos)
 
 	try:
 		print(msg)
@@ -181,6 +186,7 @@ def main():
 					robot_.target_linear_x_vel = check_linear_limit_velocity(robot_.target_linear_x_vel + LIN_VEL_STEP_SIZE)
 				elif robot_.control_mode[robot_.con_idx] == 'steering_cmd':
 					robot_.target_steering_cmd_velocity = check_linear_limit_velocity(robot_.target_steering_cmd_velocity +LIN_VEL_STEP_SIZE)
+					
 				print_vels(robot_)
 
 			elif key == 'x' :
@@ -191,7 +197,7 @@ def main():
 				print_vels(robot_)
 
 			elif key == 'a' :
-				if robot_.mode_flag == 'normal':
+				if robot_.gear == 6:
 					if robot_.control_mode[robot_.con_idx] =='steering_cmd':
 						robot_.target_steering_cmd_steering = check_angular_limit_velocity(robot_.target_steering_cmd_steering + ANG_VEL_STEP_SIZE)
 					else :	
@@ -201,7 +207,7 @@ def main():
 				print_vels(robot_)
 
 			elif key == 'd' :
-				if robot_.mode_flag == 'normal':
+				if robot_.gear ==  6 :
 					if robot_.control_mode[robot_.con_idx] =='steering_cmd':
 						robot_.target_steering_cmd_steering = check_angular_limit_velocity(robot_.target_steering_cmd_steering - ANG_VEL_STEP_SIZE)
 					else :	
@@ -210,21 +216,64 @@ def main():
 					robot_.target_linear_y_vel = check_linear_limit_velocity(robot_.target_linear_y_vel - LIN_VEL_STEP_SIZE)
 				print_vels(robot_)
 
+			elif key == 'q' :
+				if robot_.control_mode[robot_.con_idx] == 'front_ang_cmd':
+					robot_.target_free_cmd_angle_lf = check_angular_limit_velocity(robot_.target_free_cmd_angle_lf  + ANG_VEL_STEP_SIZE)
+
+				elif robot_.control_mode[robot_.con_idx] == 'front_vel_cmd':
+					robot_.target_free_cmd_velocity_lf = check_linear_limit_velocity(robot_.target_free_cmd_velocity_lf  + LIN_VEL_STEP_SIZE)
+
+				print_vels(robot_)
+
+			elif key == 'e' :
+				if robot_.control_mode[robot_.con_idx] == 'front_ang_cmd':
+					robot_.target_free_cmd_angle_rf = check_angular_limit_velocity(robot_.target_free_cmd_angle_rf  + ANG_VEL_STEP_SIZE)	
+
+				elif robot_.control_mode[robot_.con_idx] == 'front_vel_cmd':
+					robot_.target_free_cmd_velocity_rf = check_linear_limit_velocity(robot_.target_free_cmd_velocity_rf  + LIN_VEL_STEP_SIZE)
+
+				print_vels(robot_)
+
+			elif key == 'z' :
+
+				if robot_.control_mode[robot_.con_idx] == 'rear_ang_cmd':
+					robot_.target_free_cmd_angle_lr = check_angular_limit_velocity(robot_.target_free_cmd_angle_lr  + ANG_VEL_STEP_SIZE)
+
+				elif robot_.control_mode[robot_.con_idx] == 'rear_vel_cmd':
+					robot_.target_free_cmd_velocity_lr = check_linear_limit_velocity(robot_.target_free_cmd_velocity_lr  + LIN_VEL_STEP_SIZE)
+
+				print_vels(robot_)
+
+			elif key == 'c' :
+
+				if robot_.control_mode[robot_.con_idx] == 'rear_ang_cmd':
+					robot_.target_free_cmd_angle_rr = check_angular_limit_velocity(robot_.target_free_cmd_angle_rr  + ANG_VEL_STEP_SIZE)
+				elif robot_.control_mode[robot_.con_idx] == 'rear_vel_cmd':
+					robot_.target_free_cmd_velocity_rr = check_linear_limit_velocity(robot_.target_free_cmd_velocity_rr  + LIN_VEL_STEP_SIZE)
+
+				print_vels(robot_)
+
+
+
 			elif key == 's' :
 				robot_.e_stop()
 				print_vels(robot_)
 			elif key == ' ' :
-				if robot_.mode_flag =='normal':
-					robot_.mode_flag ='parallel'
+				if robot_.gear == 7 :
+					robot_.gear =0
 				else :
-					robot_.mode_flag ='normal'
-				robot_.target_linear_x_vel   = 0.0
-				robot_.control_linear_x_vel  = 0.0
-				robot_.target_linear_y_vel   = 0.0
-				robot_.control_linear_y_vel  = 0.0
-				robot_.target_angular_vel  = 0.0
-				robot_.control_angular_vel = 0.0
-				print("Mode change : {}".format(robot_.mode_flag))
+					robot_.gear = robot_.gear +1 
+				# if robot_.mode_flag =='normal':
+				# 	robot_.mode_flag ='parallel'
+				# else :
+				# 	robot_.mode_flag ='normal'
+				# robot_.target_linear_x_vel   = 0.0
+				# robot_.control_linear_x_vel  = 0.0
+				# robot_.target_linear_y_vel   = 0.0
+				# robot_.control_linear_y_vel  = 0.0
+				# robot_.target_angular_vel  = 0.0
+				# robot_.control_angular_vel = 0.0
+				print("Mode change : {}".format(robot_.gear))
 			elif key == '/':
 				if robot_.con_idx == 5:
 					robot_.con_idx = 0
@@ -236,29 +285,55 @@ def main():
 					
 			twist = Twist()
 			steering_cmd = SteeringCtrlCmd()
+			ctrl_cmd = CtrlCmd()
+			faf_cmd = FrontAngleFreeCtrlCmd()
+			raf_cmd = RearAngleFreeCtrlCmd()
+			fvf_cmd = FrontVelocityFreeCtrlCmd()
+			rvf_cmd = RearVelocityFreeCtrlCmd()
 			mode = Bool()
-			if robot_.control_mode[robot_.con_idx]=='ctrl_cmd':
-				
-				if robot_.mode_flag =='normal':
-					mode.data = True
-				else :
-					mode.data = False
-				twist.linear.x = robot_.target_linear_x_vel 
-				twist.linear.y = robot_.target_linear_y_vel
-				twist.angular.z = robot_.target_angular_vel  
-				cmd_vel_pub.publish(twist)
-				mode_pub.publish(mode)
-			elif robot_.control_mode[robot_.con_idx] =='steering_cmd':
-				
-				if robot_.mode_flag == 'normal':
-					steering_cmd.ctrl_cmd_gear = 6
-				if robot_.mode_flag == 'parallel':
-					steering_cmd.ctrl_cmd_gear = 7
-				steering_cmd.steering_ctrl_cmd_velocity= robot_.target_steering_cmd_velocity 
-				steering_cmd.steering_ctrl_cmd_steering= robot_.target_steering_cmd_steering * 0.57
-				steering_cmd._steering_ctrl_cmd_slipangle= robot_.target_steering_cmd_slipangle * 0.57
-				cmd_steering_pub.publish(steering_cmd)
 
+			ctrl_cmd.ctrl_cmd_gear = robot_.gear
+			steering_cmd.ctrl_cmd_gear = robot_.gear
+			faf_cmd.ctrl_cmd_gear=  robot_.gear
+			raf_cmd.ctrl_cmd_gear = robot_.gear
+			fvf_cmd.ctrl_cmd_gear = robot_.gear
+			rvf_cmd.ctrl_cmd_gear = robot_.gear		
+			if robot_.gear == 6:
+				# mode.data = True
+				ctrl_cmd._ctrl_cmd_linear = robot_.target_linear_x_vel
+				ctrl_cmd._ctrl_cmd_angular = robot_.target_angular_vel * 57.2958
+				ctrl_cmd._ctrl_cmd_slipangle = 0.0
+			elif robot_.gear == 7:
+				# mode.data = False
+				ctrl_cmd._ctrl_cmd_linear = (robot_.target_linear_x_vel**2 + robot_.target_linear_y_vel**2)**0.5
+				ctrl_cmd._ctrl_cmd_angular = 0.0
+				ctrl_cmd._ctrl_cmd_slipangle = math.atan2(robot_.target_linear_y_vel,robot_.target_linear_x_vel) * 57.2958
+				if abs(ctrl_cmd.ctrl_cmd_slipangle) > 90 :
+					ctrl_cmd._ctrl_cmd_linear * -1
+					if ctrl_cmd.ctrl_cmd_slipangle > 0 :
+						ctrl_cmd._ctrl_cmd_slipangle = ctrl_cmd.ctrl_cmd_slipangle -180 
+					else :
+						ctrl_cmd._ctrl_cmd_slipangle = ctrl_cmd.ctrl_cmd_slipangle + 180
+
+
+			steering_cmd._steering_ctrl_cmd_velocity= robot_.target_steering_cmd_velocity 
+			steering_cmd._steering_ctrl_cmd_steering= robot_.target_steering_cmd_steering * 57.2958
+			steering_cmd._steering_ctrl_cmd_slipangle= robot_.target_steering_cmd_slipangle * 57.2958
+			faf_cmd._free_ctrl_cmd_angle_lf = robot_.target_free_cmd_angle_lf * 57.2958
+			faf_cmd._free_ctrl_cmd_angle_rf = robot_.target_free_cmd_angle_rf * 57.2958
+			raf_cmd._free_ctrl_cmd_angle_lr = robot_.target_free_cmd_angle_lr * 57.2958
+			raf_cmd._free_ctrl_cmd_angle_rr = robot_.target_free_cmd_angle_rr * 57.2958
+			fvf_cmd._free_ctrl_cmd_velocity_lf = robot_.target_free_cmd_velocity_lf 
+			fvf_cmd._free_ctrl_cmd_velocity_rf = robot_.target_free_cmd_velocity_rf
+			rvf_cmd._free_ctrl_cmd_velocity_lr = robot_.target_free_cmd_velocity_lr
+			rvf_cmd._free_ctrl_cmd_velocity_rr = robot_.target_free_cmd_velocity_rr
+
+			ctrl_cmd_pub.publish(ctrl_cmd)
+			cmd_steering_pub.publish(steering_cmd)
+			faf_cmd_pub.publish(faf_cmd)
+			raf_cmd_pub.publish(raf_cmd)
+			fvf_cmd_pub.publish(fvf_cmd)
+			rvf_cmd_pub.publish(rvf_cmd)
 
 	except Exception as e:
 		print(e)
@@ -267,7 +342,7 @@ def main():
 		twist = Twist()
 		twist.linear.x = 0.0; twist.linear.y = 0.0; twist.linear.z = 0.0
 		twist.angular.x = 0.0; twist.angular.y = 0.0; twist.angular.z = 0.0
-		cmd_vel_pub.publish(twist)
+		# cmd_vel_pub.publish(twist)
 		
 		if os.name !='nt':
 			termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
