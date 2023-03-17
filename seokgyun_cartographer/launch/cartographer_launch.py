@@ -61,9 +61,8 @@ def generate_launch_description():
             output='screen',
             parameters=[{'use_sim_time': use_sim_time}],
             arguments=['-configuration_directory', cartographer_config_dir,
-                       '-configuration_basename', configuration_basename],
-            remappings=[('/odom','/wheel/odometry')]),
-            # remappings=[('/odom','/odometry/filtered')]),
+                       '-configuration_basename', configuration_basename]),
+
 
         DeclareLaunchArgument(
             'resolution',

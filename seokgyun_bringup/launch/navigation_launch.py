@@ -29,7 +29,11 @@ from nav2_common.launch import RewrittenYaml
 def generate_launch_description():
     # Get the launch directory
     bringup_dir = get_package_share_directory('seokgyun_bringup')
-
+    map_dir = LaunchConfiguration(
+        'map',
+        default=os.path.expanduser(os.path.join(
+            '~',
+            'my_map2.yaml')))
     namespace = LaunchConfiguration('namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')
     autostart = LaunchConfiguration('autostart')

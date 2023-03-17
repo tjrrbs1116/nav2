@@ -4,7 +4,7 @@ from rclpy.qos import QoSProfile
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Bool
 import os, sys, select
-from piot_can_msgs.msg import CtrlCmd, CtrlFb ,SteeringCtrlCmd,FrontAngleFreeCtrlCmd,RearAngleFreeCtrlCmd,FrontVelocityFreeCtrlCmd,RearVelocityFreeCtrlCmd
+from piot_can_msgs.msg import CtrlCmd, CtrlFb ,SteeringCtrlCmd,FrontAngleFreeCtrlCmd,RearAngleFreeCtrlCmd,FrontVelocityFreeCtrlCmd,RearVelocityFreeCtrlCmd ,IoCmd
 import math
 
 if os.name == 'nt':
@@ -61,8 +61,8 @@ def get_key(settings):
 
 
 def print_vels(self):
-	print('currently:\n linear vel x {0}\n linear vel y {1}\n angular vel {2}\n steering_cmd_vel {3}\n steering_cmd_steering {4}\n steering_cmd_slipangle {5}\n free_angle_lf {6}\n free_angle_rf {7}\n free_angle_lr {8}\n free angle_rr {9}\n free_vel_lf {10}\n free_vel_rf {11}\n free_vel_lr {12}\n free_vel_rr {13}'
-	.format(self.target_linear_x_vel,self.target_linear_y_vel,self.target_angular_vel,self.target_steering_cmd_velocity,self.target_steering_cmd_steering,self.target_steering_cmd_slipangle,self.target_free_cmd_angle_lf,self.target_free_cmd_angle_rf,self.target_free_cmd_angle_lr,self.target_free_cmd_angle_rr,self.target_free_cmd_velocity_lf,self.target_free_cmd_velocity_rf,self.target_free_cmd_velocity_lr,self.target_free_cmd_velocity_rr))
+	print('currently:\n linear vel x {0}\n linear vel y {1}\n angular vel {2}\n steering_cmd_vel {3}\n steering_cmd_steering {4}\n steering_cmd_slipangle {5}\n free_angle_lf {6}\n free_angle_rf {7}\n free_angle_lr {8}\n free angle_rr {9}\n free_vel_lf {10}\n free_vel_rf {11}\n free_vel_lr {12}\n free_vel_rr {13}\n io_cmd_unlock {14}\n io_cmd_speaker {15}'
+	.format(self.target_linear_x_vel,self.target_linear_y_vel,self.target_angular_vel,self.target_steering_cmd_velocity,self.target_steering_cmd_steering,self.target_steering_cmd_slipangle,self.target_free_cmd_angle_lf,self.target_free_cmd_angle_rf,self.target_free_cmd_angle_lr,self.target_free_cmd_angle_rr,self.target_free_cmd_velocity_lf,self.target_free_cmd_velocity_rf,self.target_free_cmd_velocity_lr,self.target_free_cmd_velocity_rr,self.io_cmd_unlock,self.io_cmd_speaker))
 
 
 def make_simple_profile(output, input, slop):
@@ -97,6 +97,8 @@ def check_angular_limit_velocity(vel):
 class robot:
 	def __init__(self):
 		self.mode = Bool()
+		self.io_cmd_unlock = False
+		self.io_cmd_speaker = False
 		self.mode_flag= 'normal'
 		self.con_idx = 0
 		self.control_mode = ['ctrl_cmd','steering_cmd','front_ang_cmd','rear_ang_cmd','front_vel_cmd','rear_vel_cmd']
@@ -176,7 +178,7 @@ def main():
 	fvf_cmd_pub = node.create_publisher (FrontVelocityFreeCtrlCmd, 'front_velocity_free_ctrl_cmd', qos)
 	rvf_cmd_pub = node.create_publisher (RearVelocityFreeCtrlCmd, 'rear_velocity_free_ctrl_cmd', qos)
 	# mode_pub = node.create_publisher( Bool, 'mode', qos)
-
+	io_cmd_pub = node.create_publisher (IoCmd, 'io_cmd', qos)
 	try:
 		print(msg)
 		while(1):
@@ -252,15 +254,25 @@ def main():
 					robot_.target_free_cmd_velocity_rr = check_linear_limit_velocity(robot_.target_free_cmd_velocity_rr  + LIN_VEL_STEP_SIZE)
 
 				print_vels(robot_)
-
-
-
+			elif key == 'p':
+				if robot_.io_cmd_unlock == False :
+					robot_.io_cmd_unlock = True
+				else :
+					robot_.io_cmd_unlock = False
+				print_vels(robot_)
+			elif key == 'o':
+				if robot_.io_cmd_speaker == False :
+					robot_.io_cmd_speaker = True
+				else :
+					robot_.io_cmd_speaker = False
+				print_vels(robot_)
+ 
 			elif key == 's' :
 				robot_.e_stop()
 				print_vels(robot_)
 			elif key == ' ' :
 				if robot_.gear == 7 :
-					robot_.gear =0
+					robot_.gear =1
 				else :
 					robot_.gear = robot_.gear +1 
 				# if robot_.mode_flag =='normal':
@@ -290,7 +302,8 @@ def main():
 			raf_cmd = RearAngleFreeCtrlCmd()
 			fvf_cmd = FrontVelocityFreeCtrlCmd()
 			rvf_cmd = RearVelocityFreeCtrlCmd()
-			mode = Bool()
+			io_cmd = IoCmd()
+			# mode = Bool()
 
 			ctrl_cmd.ctrl_cmd_gear = robot_.gear
 			steering_cmd.ctrl_cmd_gear = robot_.gear
@@ -327,13 +340,16 @@ def main():
 			fvf_cmd._free_ctrl_cmd_velocity_rf = robot_.target_free_cmd_velocity_rf
 			rvf_cmd._free_ctrl_cmd_velocity_lr = robot_.target_free_cmd_velocity_lr
 			rvf_cmd._free_ctrl_cmd_velocity_rr = robot_.target_free_cmd_velocity_rr
-
+			io_cmd.io_cmd_unlock = robot_.io_cmd_unlock
+			io_cmd.io_cmd_speaker = robot_.io_cmd_speaker
 			ctrl_cmd_pub.publish(ctrl_cmd)
-			cmd_steering_pub.publish(steering_cmd)
-			faf_cmd_pub.publish(faf_cmd)
-			raf_cmd_pub.publish(raf_cmd)
-			fvf_cmd_pub.publish(fvf_cmd)
-			rvf_cmd_pub.publish(rvf_cmd)
+			# cmd_steering_pub.publish(steering_cmd)
+			# faf_cmd_pub.publish(faf_cmd)
+			# raf_cmd_pub.publish(raf_cmd)
+			# fvf_cmd_pub.publish(fvf_cmd)
+			# rvf_cmd_pub.publish(rvf_cmd)
+			io_cmd_pub.publish(io_cmd)
+
 
 	except Exception as e:
 		print(e)

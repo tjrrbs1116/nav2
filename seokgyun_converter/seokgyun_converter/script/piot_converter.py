@@ -49,41 +49,6 @@ class PiotConverter(Node):
 		self.ctrl_cmd_angular = 0.0
 		self.ctrl_cmd_slipangle = 0.0
 
-	
-		# ctrl_steering_ctrl_cmd
-		self.ctrl_steering_cmd_pub = self.create_publisher(SteeringCtrlCmd(), 'steering_ctrl_cmd', qos)
-		self.steering_cmd_sub = self.create_subscription(SteeringCtrlCmd(), 'steering_ctrl', self.cmd_vel_callback, qos)
-		self.ctrl_steering_ctrl_cmd = SteeringCtrlCmd()
-		self.ctrl_steering_ctrl_cmd._ctrl_cmd_gear = 1 #Gear Parking
-		self.ctrl_steering_ctrl_cmd._steering_ctrl_cmd_velocity = 0.0
-		self.ctrl_steering_ctrl_cmd._steering_ctrl_cmd_steering = 0.0
-		self.ctrl_steering_ctrl_cmd._steering_ctrl_cmd_slipangle =0.0
-
-		#front_angle_free_ctrl_cmd
-		self.front_angle_free_ctrl_cmd = FrontAngleFreeCtrlCmd()
-		self.front_angle_free_ctrl_cmd._ctrl_cmd_gear = 1 #Gear Parking
-		self.front_angle_free_ctrl_cmd._free_ctrl_cmd_angle_lf = 0.0
-		self.front_angle_free_ctrl_cmd._free_ctrl_cmd_angle_rf = 0.0
-
-		#rear_angle_free_ctrl_cmd 
-		self.rear_angle_free_ctrl_cmd = RearAngleFreeCtrlCmd()
-		self.rear_angle_free_ctrl_cmd._ctrl_cmd_gear = 1 #Gear Parking
-		self.rear_angle_free_ctrl_cmd._free_ctrl_cmd_angle_lr = 0.0
-		self.rear_angle_free_ctrl_cmd._free_ctrl_cmd_angle_rr = 0.0
-		
-		#front_velocity_free_ctrl_cmd
-		self.front_velocity_free_ctrl_cmd = FrontVelocityFreeCtrlCmd()
-		self.front_velocity_free_ctrl_cmd._ctrl_cmd_gear = 1 #Gear Parking
-		self.front_velocity_free_ctrl_cmd._free_ctrl_cmd_velocity_lf = 0.0
-		self.front_velocity_free_ctrl_cmd._free_ctrl_cmd_velocity_rf = 0.0
-
-		#rear_velocity_free_ctrl_cmd
-		self.rear_velocity_free_ctrl_cmd = RearVelocityFreeCtrlCmd()
-		self.rear_velocity_free_ctrl_cmd._ctrl_cmd_gear = 1 #Gear Parking
-		self.rear_velocity_free_ctrl_cmd._free_ctrl_cmd_velocity_lr = 0.0
-		self.rear_velocity_free_ctrl_cmd._free_ctrl_cmd_velocity_lr = 0.0
-
-
 		# mode_cmd 
 		self.mode_sub = self.create_subscription(Bool, 'mode', self.mode_callback, qos)
 		self.mode = Bool()
@@ -109,16 +74,10 @@ class PiotConverter(Node):
         
 	def cmd_vel_callback(self, msg):
 		if self.mode_flag == True:	
-				if msg.linear.x == 0 and msg.angular.z > 0:
-					self.ctrl_cmd_gear = 6 # Gear 4T4D
-					self.ctrl_cmd_linear = msg.linear.x
-					self.ctrl_cmd_angular = msg.angular.z * 57.2958 # rad to deg
-					self.ctrl_cmd_slipangle = 0.0
-				else :
-					self.ctrl_cmd_gear = 6 # Gear 4T4D
-					self.ctrl_cmd_linear = msg.linear.x
-					self.ctrl_cmd_angular = msg.angular.z * 57.2958 # rad to deg
-					self.ctrl_cmd_slipangle = 0.0		
+			self.ctrl_cmd_gear = 6 # Gear 4T4D
+			self.ctrl_cmd_linear = msg.linear.x
+			self.ctrl_cmd_angular = msg.angular.z * 57.2958 # rad to deg
+			self.ctrl_cmd_slipangle = 0.0		
 			
 
 		else:

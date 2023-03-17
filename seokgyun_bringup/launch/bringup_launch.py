@@ -37,7 +37,26 @@ def generate_launch_description():
     slam = LaunchConfiguration('slam')
     map_yaml_file = LaunchConfiguration('map')
     use_sim_time = LaunchConfiguration('use_sim_time')
-    params_file = LaunchConfiguration('params_file')
+    
+    map_dir = LaunchConfiguration(
+        'map',
+       default=os.path.join(
+            bringup_dir, 'maps', 'my_map2.yaml'))
+    
+    
+    params_file = LaunchConfiguration(
+        'params_file',
+          default=os.path.join(
+            get_package_share_directory('seokgyun_bringup'),
+            'params',
+            'nav2_params.yaml')      
+    )
+
+    rviz_config_dir = os.path.join(
+        get_package_share_directory('seokgyun_bringup'),
+        'rviz',
+        'nav2_default_view.rviz')
+    
     autostart = LaunchConfiguration('autostart')
     use_composition = LaunchConfiguration('use_composition')
     use_respawn = LaunchConfiguration('use_respawn')
@@ -53,14 +72,14 @@ def generate_launch_description():
                   ('/tf_static', 'tf_static')]
 
     # Create our own temporary YAML files that include substitutions
-    param_substitutions = {
-        'use_sim_time': use_sim_time,
-        'yaml_filename': map_yaml_file}
+    # param_substitutions = {
+    #     'use_sim_time': use_sim_time,
+    #     'yaml_filename': map_yaml_file}
 
     configured_params = RewrittenYaml(
         source_file=params_file,
         root_key=namespace,
-        param_rewrites=param_substitutions,
+        param_rewrites={},
         convert_types=True)
 
     stdout_linebuf_envvar = SetEnvironmentVariable(
@@ -83,18 +102,17 @@ def generate_launch_description():
 
     declare_map_yaml_cmd = DeclareLaunchArgument(
         'map',
-             default_value=os.path.join(
-            bringup_dir, 'maps', 'empty_world.yaml'),
+             default_value=map_dir,
         description='Full path to map yaml file to load')
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
         'use_sim_time',
-        default_value='true',
+        default_value='false',
         description='Use simulation (Gazebo) clock if true')
 
     declare_params_file_cmd = DeclareLaunchArgument(
         'params_file',
-        default_value=os.path.join(bringup_dir, 'params', 'nav2_params.yaml'),
+        default_value=params_file,
         description='Full path to the ROS2 parameters file to use for all launched nodes')
 
     declare_autostart_cmd = DeclareLaunchArgument(
@@ -129,12 +147,6 @@ def generate_launch_description():
             remappings=remappings,
             output='screen'),
 
-        # IncludeLaunchDescription(
-        #     PythonLaunchDescriptionSource(os.path.join(gazebo_dir, 'turtlebot3_house.launch.py')),
-        #     #condition=IfCondition(slam),
-        #     launch_arguments={'x_pose': 0,
-        #                       'y_pose': 0,}.items()),
-
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(os.path.join(launch_dir, 'slam_launch.py')),
@@ -167,6 +179,16 @@ def generate_launch_description():
                               'use_composition': use_composition,
                               'use_respawn': use_respawn,
                               'container_name': 'nav2_container'}.items()),
+
+
+
+        Node(
+            package='rviz2',
+            executable='rviz2',
+            name='rviz2',
+            arguments=['-d', rviz_config_dir],
+            parameters=[{'use_sim_time': use_sim_time}],
+            output='screen'),
     ])
 
     # Create the launch description and populate
