@@ -13,7 +13,12 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    
+
+    imu_complementary_filter_dir = LaunchConfiguration(
+        'imu_complementary_filter_dir',
+        default=os.path.join(get_package_share_directory('imu_complementary_filter'), 'launch'))
+
+
     can_control_pkg_dir = LaunchConfiguration(
         'can_control_pkg_dir',
         default=os.path.join(get_package_share_directory('piot_can_control'), 'launch'))
@@ -21,11 +26,11 @@ def generate_launch_description():
     converter_pkg_dir = LaunchConfiguration(
         'converter_pkg_dir',
         default=os.path.join(get_package_share_directory('piot_converter')))
-    
+
     robot_localization_pkg_dir = LaunchConfiguration(
         'robot_localization_pkg_dir',
         default=os.path.join(get_package_share_directory('piot_robot_localization'),'launch'))
-     
+
     lidar_pkg_dir = LaunchConfiguration(
         'lidar_pkg_dir',
         default=os.path.join(get_package_share_directory('rplidar_ros2'), 'launch'))
@@ -33,7 +38,7 @@ def generate_launch_description():
     imu_pkg_dir = LaunchConfiguration(
         'imu_pkg_dir',
         default=os.path.join(get_package_share_directory('witmotion_ros'), 'launch'))
-        
+
     depth_camera_pkg_dir = LaunchConfiguration(
         'depth_camera_pkg_dir',
         default=os.path.join(get_package_share_directory('astra_camera'), 'launch'))
@@ -51,18 +56,18 @@ def generate_launch_description():
                 [ThisLaunchFileDir(), '/state_publisher_launch.py']),
             launch_arguments={'use_sim_time': use_sim_time}.items(),
         ),
-        
+
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([can_control_pkg_dir, '/can_control_launch.py']),
         ),
-        
+
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([converter_pkg_dir, '/converter_launch.py']),
-        ),    
+        ),
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([robot_localization_pkg_dir, '/robot_localization_launch.py']),
-        ),   
+        ),
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([lidar_pkg_dir, '/rplidar_s2_launch.py']),
@@ -71,8 +76,11 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([imu_pkg_dir, '/witmotion.py']),
         ),
-        
+
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([depth_camera_pkg_dir, '/dabai.launch.py']),
+            PythonLaunchDescriptionSource([imu_complementary_filter_dir, '/complementary_filter.launch.py']),
         ),
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource([depth_camera_pkg_dir, '/dabai.launch.py']),
+        # ),
     ])

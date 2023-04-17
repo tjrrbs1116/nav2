@@ -167,4 +167,11 @@
 
   <link name="base_scan" />
 
+  <!-- <joint name="depth_camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <origin xyz="${base_length/2} 0.0 ${base_height}" rpy="0.0 0.0 0.0"/>
+  </joint>
+
+  <link name="camera_link" /> -->
 </robot>

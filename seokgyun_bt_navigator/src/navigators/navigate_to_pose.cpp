@@ -29,7 +29,7 @@ NavigateToPoseNavigator::configure(
 {
   start_time_ = rclcpp::Time(0);
   auto node = parent_node.lock();
-
+ RCLCPP_INFO(logger_, "this is navigate_to_pose configure");
   if (!node->has_parameter("goal_blackboard_id")) {
     node->declare_parameter("goal_blackboard_id", std::string("goal"));
   }
@@ -113,7 +113,7 @@ NavigateToPoseNavigator::onLoop()
   // action server feedback (pose, duration of task,
   // number of recoveries, and distance remaining to goal)
   auto feedback_msg = std::make_shared<ActionT::Feedback>();
-
+  // RCLCPP_INFO(logger_, "this is navigate_to_pose loop");
   geometry_msgs::msg::PoseStamped current_pose;
   nav2_util::getCurrentPose(
     current_pose, *feedback_utils_.tf,

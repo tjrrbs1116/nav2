@@ -41,7 +41,7 @@ def generate_launch_description():
     map_dir = LaunchConfiguration(
         'map',
        default=os.path.join(
-            bringup_dir, 'maps', 'my_map2.yaml'))
+            bringup_dir, 'maps', 'f1.yaml'))
     
     
     params_file = LaunchConfiguration(

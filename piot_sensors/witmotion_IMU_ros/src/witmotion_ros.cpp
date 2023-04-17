@@ -487,7 +487,8 @@ bool ROSWitmotionSensorController::Restart(
 
 void ROSWitmotionSensorController::imu_process(
     const witmotion_datapacket &packet) {
-
+  // RCLCPP_INFO(rclcpp::get_logger("imu_process"),
+  //             "packet"); 
   if (!(imu_enable_accel || imu_enable_velocities || imu_enable_orientation))
     return;
   static sensor_msgs::msg::Imu msg;

@@ -81,11 +81,11 @@ BtNavigator::BtNavigator(const rclcpp::NodeOptions & options)
     "nav2_back_up_cancel_bt_node",
     "nav2_drive_on_heading_cancel_bt_node"
   };
-  
-  // add_parameter(
-  //   "whatthe" , rclcpp::ParameterValue(3)
-  // );
-  declare_parameter("whatthe", rclcpp::ParameterValue(3));
+
+  add_parameter(
+    "whatthe" , rclcpp::ParameterValue(3)
+  );
+  // declare_parameter("whatthe", rclcpp::ParameterValue(3));
   declare_parameter("plugin_lib_names", plugin_libs);
   declare_parameter("transform_tolerance", rclcpp::ParameterValue(0.1));
   declare_parameter("global_frame", std::string("map"));
@@ -93,7 +93,7 @@ BtNavigator::BtNavigator(const rclcpp::NodeOptions & options)
   declare_parameter("odom_topic", std::string("odom"));
   int num = get_parameter("whatthe").as_int();
 
-
+  // RCLCPP_INFO(get_logger(), "nownownownownownownownownownownownownownownownownownownownownownownownow");
   RCLCPP_INFO(get_logger(), "what the is  %d",num);
 }
 
@@ -105,7 +105,6 @@ nav2_util::CallbackReturn
 BtNavigator::on_configure(const rclcpp_lifecycle::State & /*state*/)
 {
   RCLCPP_INFO(get_logger(), "Configuring");
-
   tf_ = std::make_shared<tf2_ros::Buffer>(get_clock());
   auto timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(
     get_node_base_interface(), get_node_timers_interface());

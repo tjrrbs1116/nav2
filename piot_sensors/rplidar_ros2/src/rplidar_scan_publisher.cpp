@@ -408,10 +408,13 @@ public:
 
             if (op_result == RESULT_OK) {
                 op_result = drv->ascendScanData(nodes, count);
+                // float angle_min = DEG2RAD(30.0f);
+                // float angle_max = DEG2RAD(330.0f);
                 float angle_min = DEG2RAD(0.0f);
                 float angle_max = DEG2RAD(359.0f);
                 if (op_result == RESULT_OK) {
                     if (angle_compensate) {
+                        // RCLCPP_INFO(this->get_logger(),"this is angle_compensate");
                         //const int angle_compensate_multiple = 1;
                         const int angle_compensate_nodes_count = 360*angle_compensate_multiple;
                         int angle_compensate_offset = 0;
@@ -425,12 +428,16 @@ public:
                                 int angle_value = (int)(angle * angle_compensate_multiple);
                                 if ((angle_value - angle_compensate_offset) < 0) angle_compensate_offset = angle_value;
                                 for (j = 0; j < angle_compensate_multiple; j++) {
-
                                     int angle_compensate_nodes_index = angle_value-angle_compensate_offset+j;
-                                    if(angle_compensate_nodes_index >= angle_compensate_nodes_count)
-                                        angle_compensate_nodes_index = angle_compensate_nodes_count-1;
+                                    if(angle_compensate_nodes_index >= angle_compensate_nodes_count) 
+                                    angle_compensate_nodes_index = angle_compensate_nodes_count-1;
+                                    if(angle_compensate_nodes_index >145 && angle_compensate_nodes_index<200){continue;}
+                                    // if(angle_compensate_nodes_index >330 && angle_compensate_nodes_index<360){continue;}
                                     angle_compensate_nodes[angle_compensate_nodes_index] = nodes[i];
                                 }
+                            
+
+
                             }
                         }
     
