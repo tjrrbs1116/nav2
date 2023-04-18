@@ -7,10 +7,27 @@ from math import sin, cos
 from rclpy.qos import QoSProfile
 from piot_can_msgs.msg import CtrlCmd, CtrlFb
 from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3, TransformStamped
+from sensor_msgs.msg import Imu
 from nav_msgs.msg import Odometry
 from std_msgs.msg import Bool
 from tf2_ros import TransformBroadcaster
 
+def euler_from_quaternion(x, y, z, w):
+
+	t0 = +2.0 * (w * x + y * z)
+	t1 = +1.0 - 2.0 * (x * x + y * y)
+	roll_x = math.atan2(t0, t1)
+
+	t2 = +2.0 * (w * y - z * x)
+	t2 = +1.0 if t2 > +1.0 else t2
+	t2 = -1.0 if t2 < -1.0 else t2
+	pitch_y = math.asin(t2)
+
+	t3 = +2.0 * (w * z + x * y)
+	t4 = +1.0 - 2.0 * (y * y + z * z)
+	yaw_z = math.atan2(t3, t4)
+
+	return roll_x, pitch_y, yaw_z # in radians
 
 def quaternion_from_euler(ai, aj, ak):
 	ai /= 2.0
@@ -93,7 +110,7 @@ class PiotConverter(Node):
 #		self.odom_pub = self.create_publisher(Odometry, 'odom', qos)
 		self.odom_pub = self.create_publisher(Odometry, '/wheel/odometry', qos)
 		#self.odom2_pub = self.create_publisher(Odometry, '/notfb_odom' ,qos)
-
+		# self.imu_sub = self.create_subscription(Imu, '/imu_sensing',self.imu_sub_callback,qos)
 		self.ctrl_fb_sub = self.create_subscription(CtrlFb, 'ctrl_fb', self.ctrl_fb_callback, qos)
 #		self.odom_broadcaster = TransformBroadcaster(self)
 		self.x = 0.0
@@ -114,6 +131,10 @@ class PiotConverter(Node):
 		self.current_time = self.get_clock().now().to_msg()
 		self.last_time = self.get_clock().now().to_msg()
 		self.timer = self.create_timer(0.01, self.timer_callback)
+
+	# def imu_sub_callback(self,msg):
+	# 	euler = euler_from_quaternion(msg.orientation.x , msg.orientation.y , msg.orientation.z , msg.orientation.w)
+	# 	self.th = euler[2] #radian th
 
 
 	def cmd_vel_callback(self, msg):

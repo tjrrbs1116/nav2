@@ -18,6 +18,9 @@ def generate_launch_description():
         'imu_complementary_filter_dir',
         default=os.path.join(get_package_share_directory('imu_complementary_filter'), 'launch'))
 
+    imu_filter_madgwick = LaunchConfiguration(
+        'imu_filter_madgwick',
+        default=os.path.join(get_package_share_directory('imu_filter_madgwick'), 'launch'))
 
     can_control_pkg_dir = LaunchConfiguration(
         'can_control_pkg_dir',
@@ -65,8 +68,14 @@ def generate_launch_description():
             PythonLaunchDescriptionSource([converter_pkg_dir, '/converter_launch.py']),
         ),
 
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource([robot_localization_pkg_dir, '/robot_localization_launch.py']),
+        # ),
+
+        ##gps
+
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([robot_localization_pkg_dir, '/robot_localization_launch.py']),
+            PythonLaunchDescriptionSource([robot_localization_pkg_dir, '/gps_robot_localization_launch.py']),
         ),
 
         IncludeLaunchDescription(
@@ -80,6 +89,11 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([imu_complementary_filter_dir, '/complementary_filter.launch.py']),
         ),
+
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource([imu_filter_madgwick, '/imu_filter.launch.py']),
+        # ),
+
         # IncludeLaunchDescription(
         #     PythonLaunchDescriptionSource([depth_camera_pkg_dir, '/dabai.launch.py']),
         # ),
