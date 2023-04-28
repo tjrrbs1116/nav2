@@ -905,6 +905,7 @@ AmclNode::getMaxWeightHyp(
   return false;
 }
 
+
 void
 AmclNode::publishAmclPose(
   const sensor_msgs::msg::LaserScan::ConstSharedPtr & laser_scan,
@@ -992,7 +993,7 @@ AmclNode::calculateMaptoOdomTransform(
   tf2::impl::Converter<true, false>::convert(odom_to_map.pose, latest_tf_);
   latest_tf_valid_ = true;
 }
-
+// map->odom
 void
 AmclNode::sendMapToOdomTransform(const tf2::TimePoint & transform_expiration)
 {

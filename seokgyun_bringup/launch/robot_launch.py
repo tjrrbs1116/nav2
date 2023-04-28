@@ -38,6 +38,10 @@ def generate_launch_description():
         'lidar_pkg_dir',
         default=os.path.join(get_package_share_directory('rplidar_ros2'), 'launch'))
 
+    gps_pkg_dir = LaunchConfiguration(
+        'gps_pkg_dir',
+        default=os.path.join(get_package_share_directory('ublox_gps'), 'launch'))
+
     imu_pkg_dir = LaunchConfiguration(
         'imu_pkg_dir',
         default=os.path.join(get_package_share_directory('witmotion_ros'), 'launch'))
@@ -68,15 +72,22 @@ def generate_launch_description():
             PythonLaunchDescriptionSource([converter_pkg_dir, '/converter_launch.py']),
         ),
 
+
+        ## only lidar +imu
+
         # IncludeLaunchDescription(
         #     PythonLaunchDescriptionSource([robot_localization_pkg_dir, '/robot_localization_launch.py']),
         # ),
 
-        ##gps
+        ## + gps
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([robot_localization_pkg_dir, '/gps_robot_localization_launch.py']),
         ),
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([gps_pkg_dir, '/ublox_gps_node_base-launch.py']),
+        ),
+        # ############################
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([lidar_pkg_dir, '/rplidar_s2_launch.py']),

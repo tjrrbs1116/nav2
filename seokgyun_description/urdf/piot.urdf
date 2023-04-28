@@ -96,7 +96,7 @@
         </material>
       </visual>
     </link>
-  
+
     <link name = "${prefix}_virtul_link"/>
 
 
@@ -112,7 +112,7 @@
       <child link="${prefix}_virtul_link"/>
       <origin xyz="${x_reflect*wheel_xoff} ${y_reflect*wheel_ygap} ${-wheel_zoff}" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
-    </joint> 
+    </joint>
 
     <joint name="${prefix}_joint" type="continuous">
       <parent link="base_link"/>
@@ -120,8 +120,8 @@
       <origin xyz="${x_reflect*wheel_xoff} ${y_reflect*wheel_ygap} ${-wheel_zoff}" rpy="0 0 0"/>
       <axis xyz="0 1 0"/>
     </joint>
-    
-<!-- 
+
+<!--
     <link name = "${prefix}_virtul_link"/>
 
 
@@ -140,7 +140,7 @@
       <axis xyz="0 1 0"/>
     </joint> -->
 
-    
+
   </xacro:macro>
 
   <xacro:wheel prefix="drivewhl_fl" x_reflect="1" y_reflect="1" />
@@ -154,7 +154,7 @@
   <joint name="imu_joint" type="fixed">
     <parent link="base_link"/>
     <child link="imu_link"/>
-    <origin xyz="${base_length/2 -lidar_xoff } ${-imu_yoff} ${base_height}" rpy="0.0 0.0 3.14"/>
+    <origin xyz="${base_length/2 -lidar_xoff } ${-imu_yoff} ${base_height}" rpy="0.0 0.0 0.0"/>
   </joint>
 
   <link name="imu_link"/>
@@ -167,11 +167,20 @@
 
   <link name="base_scan" />
 
-  <!-- <joint name="depth_camera_joint" type="fixed">
+  <joint name="depth_camera_joint" type="fixed">
     <parent link="base_link"/>
     <child link="camera_link"/>
     <origin xyz="${base_length/2} 0.0 ${base_height}" rpy="0.0 0.0 0.0"/>
   </joint>
 
-  <link name="camera_link" /> -->
+  <link name="camera_link" />
+
+  <joint name="gps_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="gps_link"/>
+    <origin xyz="${base_length/2 } ${imu_yoff} ${base_height}" rpy="0.0 0.0 0.0"/>
+  </joint>
+
+
+  <link name="gps_link" />
 </robot>

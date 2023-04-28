@@ -459,7 +459,7 @@ void ControllerServer::computeAndPublishVelocity()
     throw nav2_core::PlannerException("Failed to make progress");
   }
 
-  nav_2d_msgs::msg::Twist2D twist = getThresholdedTwist(odom_sub_->getTwist());
+  nav_2d_msgs::msg::Twist2D twist = getThresholdedTwist(odom_sub_->getTwist()); // threshold
 
   geometry_msgs::msg::TwistStamped cmd_vel_2d;
 

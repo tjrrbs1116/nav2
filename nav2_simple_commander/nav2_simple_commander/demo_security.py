@@ -37,10 +37,9 @@ def main():
     # Security route, probably read in from a file for a real application
     # from either a map or drive and repeat.
     security_route = [
-        [-6.0, -1.5],
-        [-16.2, -1.5]]
-        # [-14.31, 4.79]]
-        # [-10.78, -0.35]]
+        [0.57,-2.997],
+        [-11.43, -5.64]]
+        #[-11.46, 0.917]]
         # [-3.665, -4.303],
         # [-3.665, 2.330],
         # [-3.665, 9.283]]
@@ -53,10 +52,10 @@ def main():
     initial_pose = PoseStamped()
     initial_pose.header.frame_id = 'map'
     initial_pose.header.stamp = navigator.get_clock().now().to_msg()
-    initial_pose.pose.position.x = 0.4
-    initial_pose.pose.position.y = -0.579
-    initial_pose.pose.orientation.z = 0.9996
-    initial_pose.pose.orientation.w = 0.0259
+    initial_pose.pose.position.x = 3.598
+    initial_pose.pose.position.y = -1.573
+    initial_pose.pose.orientation.z = -0.997703
+    initial_pose.pose.orientation.w = 0.067735
     navigator.setInitialPose(initial_pose)
 
     # Wait for navigation to fully activate
@@ -88,7 +87,7 @@ def main():
                       + ' seconds.')
 
                 # Some failure mode, must stop since the robot is clearly stuck
-                if Duration.from_msg(feedback.navigation_time) > Duration(seconds=180.0):
+                if Duration.from_msg(feedback.navigation_time) > Duration(seconds=600.0):
                     print('Navigation has exceeded timeout of 180s, canceling request.')
                     navigator.cancelTask()
 

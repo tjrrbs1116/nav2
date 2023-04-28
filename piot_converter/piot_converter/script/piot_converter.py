@@ -61,7 +61,7 @@ class PiotConverter(Node):
 		self.cmd_vel_sub = self.create_subscription(Twist, 'cmd_vel', self.cmd_vel_callback, qos)
 		self.log_cmd_pub  = self.create_publisher(CtrlCmd, 'log_cmd', qos)
 
-
+		self.imu_calibration_flag = False
 		#cmd vel target data - before pid controller
 		self.cmd_vel = Twist()
 
@@ -82,8 +82,8 @@ class PiotConverter(Node):
 		self.I_gain = 1.6
 		self.D_gain = 0.03
 		##Angular PID Gain
-		self.P_a_gain =0.8
-		self.I_a_gain =1.3
+		self.P_a_gain = 0.8 # 0.8
+		self.I_a_gain = 0.6
 		self.D_a_gain = 0.03
 		self.target_linear_p_term = 0.0
 		self.target_linear_i_term = 0.0
@@ -133,9 +133,10 @@ class PiotConverter(Node):
 		self.timer = self.create_timer(0.01, self.timer_callback)
 
 	# def imu_sub_callback(self,msg):
-	# 	euler = euler_from_quaternion(msg.orientation.x , msg.orientation.y , msg.orientation.z , msg.orientation.w)
-	# 	self.th = euler[2] #radian th
-
+	# 	if(self.imu_calibration_flag == False):
+	# 		euler = euler_from_quaternion(msg.orientation.x , msg.orientation.y , msg.orientation.z , msg.orientation.w)
+	# 		self.th = euler[2] #radian th
+	# 		self.imu_calibration_flag = True
 
 	def cmd_vel_callback(self, msg):
 #		if self.mode_flag == True:
@@ -257,9 +258,9 @@ class PiotConverter(Node):
 			self.target_angular_i_term  += self.I_a_gain*(self.angular_error)*dt
 			self.target_angular_d_term = self.D_a_gain*((self.angular_error - self.old_angular_error) / dt)
 
-			self.target_linear = self.target_linear_p_term + self.target_linear_i_term #+ self.target_linear_d_term
+			self.target_linear = self.target_linear_p_term + self.target_linear_i_term #+ self.target_linear_d_term  #self.cmd_vel.linear.x
 			#self.target_angular = self.cmd_vel.angular.z #self.target_angular_p_term + self.target_angular_i_term #+ self.target_angular_d_term
-			self.target_angular = self.target_angular_p_term + self.target_angular_i_term
+			self.target_angular = self.target_angular_p_term + self.target_angular_i_term #self.cmd_vel.angular.z
 			self.log.ctrl_cmd_angular = self.target_angular # radian_target
 
 
@@ -277,6 +278,8 @@ class PiotConverter(Node):
 			self.target_angular_i_term = 0.0
 			self.linear_error =0.0
 			self.angular_error =0.0
+			self.old_ctrl_cmd.ctrl_cmd_angular= 0.0
+			self.old_ctrl_cmd.ctrl_cmd_linear = 0.0
 
 
 #-----------------------------------------------------------------------------------#
@@ -296,8 +299,8 @@ class PiotConverter(Node):
 		self.x += delta_x
 		self.y += delta_y
 		self.th += delta_th
-		self.get_logger().info("x is : %.4f" % self.x)
-		self.get_logger().info("y is : %.4f" % self.y)
+		# self.get_logger().info("x is : %.4f" % self.x)
+		# self.get_logger().info("y is : %.4f" % self.y)
 		# q1 =quaternion_from_euler(0,0,self.nf_th)
 
 

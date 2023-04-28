@@ -66,6 +66,8 @@ bool SimpleProgressChecker::check(geometry_msgs::msg::PoseStamped & current_pose
     reset_baseline_pose(current_pose2d);
     return true;
   }
+
+  throw nav2_core::PlannerException("error is this");
   return !((clock_->now() - baseline_time_) > time_allowance_);
 }
 

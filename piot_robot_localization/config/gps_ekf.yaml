@@ -91,8 +91,8 @@ ekf_filter_node:
 # if unspecified, effectively making this parameter required for each sensor.
         odom0_config: [true, true, false,
                        false, false, true,
-                       false, false, false,
-                       false, false, false,
+                       true, true, false,
+                       false, false, true,
                        false, false, false]
 
         #        [x_pos   , y_pos    , z_pos,
@@ -135,6 +135,24 @@ ekf_filter_node:
 # the thresholds.
         odom0_pose_rejection_threshold: 5.0
         odom0_twist_rejection_threshold: 1.0
+
+
+
+        # odom1: odometry/gps
+        # odom1_config: [true, true, false,
+        #                 false, false, false,
+        #                 false, false, false,
+        #                 false, false, false,
+        #                 false, false, false]
+        # odom1_queue_size: 2
+        # odom1_nodelay: false
+        # odom1_differential: false
+        # odom1_relative: false
+
+
+
+
+
 
         imu0: imu_sensing
         imu0_config: [false, false, false,
@@ -250,7 +268,7 @@ ekf_filter_node_map:
     debug: false
 
     # Whether to broadcast the transformation over the /tf topic. Defaults to true if unspecified.
-    publish_tf: true
+    publish_tf: false
 
     # If the filter sees a jump back in time, the filter is reset (convenient for testing with rosbags!)
     reset_on_time_jump: true
@@ -260,9 +278,9 @@ ekf_filter_node_map:
     base_link_frame: base_footprint
     world_frame: map
 
-    odom0: wheel/odometry
+    odom0: odometry/gps
     odom0_config: [true, true, false,
-                  false, false, true,
+                  false, false, false,
                   false, false, false,
                   false, false, false,
                   false, false, false]
@@ -271,31 +289,31 @@ ekf_filter_node_map:
     odom0_differential: false
     odom0_relative: false
 
-    odom1: odometry/gps
-    odom1_config: [true,  true,  false,
-                   false, false, false,
-                   false, false, false,
-                   false, false, false,
-                   false, false, false]
-    odom1_queue_size: 10
-    odom1_nodelay: false
-    odom1_differential: false
-    odom1_relative: false
+#     odom1: odometry/gps
+#     odom1_config: [true,  true,  false,
+#                    false, false, false,
+#                    false, false, false,
+#                    false, false, false,
+#                    false, false, false]
+#     odom1_queue_size: 10
+#     odom1_nodelay: false
+#     odom1_differential: false
+#     odom1_relative: false
 
-    imu0: imu_sensing
-    imu0_config: [false, false, false,
-                  true,  true,  true,
-                  false, false, false,
-                  true,  true,  true,
-                  true,  true,  true]
-    imu0_nodelay: false
-    imu0_differential: false
-    imu0_relative: false
-    imu0_queue_size: 7
-    imu0_pose_rejection_threshold: 0.8                 # Note the difference in parameter names
-    imu0_twist_rejection_threshold: 0.8                #
-    imu0_linear_acceleration_rejection_threshold: 0.8  #
-    imu0_remove_gravitational_acceleration: true
+#     imu0: imu_sensing
+#     imu0_config: [false, false, false,
+#                   false,  false,  true,
+#                   false, false, false,
+#                   false,  false,  true,
+#                   false,  false,  false]
+#     imu0_nodelay: false
+#     imu0_differential: false
+#     imu0_relative: false
+#     imu0_queue_size: 7
+#     imu0_pose_rejection_threshold: 0.8                 # Note the difference in parameter names
+#     imu0_twist_rejection_threshold: 0.8                #
+#     imu0_linear_acceleration_rejection_threshold: 0.8  #
+#     imu0_remove_gravitational_acceleration: true
 
     use_control: false
 
@@ -331,16 +349,102 @@ ekf_filter_node_map:
                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    1e-9,   0.0,
                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    1e-9]
 
+ekf_filter_node_map_gps_amcl:
+
+  ros__parameters:
+
+    use_sim_time: false
+
+
+    frequency: 30.0
+    sensor_timeout: 0.1
+    two_d_mode: true
+    transform_time_offset: 0.0
+    transform_timeout: 0.0
+    print_diagnostics: true
+    debug: false
+
+    # Whether to broadcast the transformation over the /tf topic. Defaults to true if unspecified.
+    publish_tf: false
+
+    # If the filter sees a jump back in time, the filter is reset (convenient for testing with rosbags!)
+    reset_on_time_jump: true
+
+    map_frame: map
+    odom_frame: odom
+    base_link_frame: base_footprint
+    world_frame: map
+
+    odom0: odometry/gps
+    odom0_config: [true, true, false,
+                  false, false, false,
+                  false, false, false,
+                  false, false, false,
+                  false, false, false]
+    odom0_queue_size: 2
+    odom0_nodelay: false
+    odom0_differential: false
+    odom0_relative: false
+
+     pose0: odometry/gps
+     pose0_config: [true,  true,  false,
+                    false, false, false,
+                    false, false, false,
+                    false, false, false,
+                    false, false, false]
+     pose0_queue_size: 10
+     pose0_nodelay: false
+     pose0_differential: false
+     pose0_relative: false
+
+
+
+    use_control: false
+
+    process_noise_covariance: [0.05,   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                               0.0,    0.05,   0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                               0.0,    0.0,    0.06,   0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                               0.0,    0.0,    0.0,    0.03,   0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                               0.0,    0.0,    0.0,    0.0,    0.03,   0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                               0.0,    0.0,    0.0,    0.0,    0.0,    0.06,   0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                               0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.025,   0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                               0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.025,   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                               0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.04,   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                               0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.01,   0.0,    0.0,    0.0,    0.0,    0.0,
+                               0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.01,   0.0,    0.0,    0.0,    0.0,
+                               0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.02,   0.0,    0.0,    0.0,
+                               0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.01,   0.0,    0.0,
+                               0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.01,   0.0,
+                               0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.015]
+
+    initial_estimate_covariance: [1e-9,   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                  0.0,    1e-9,   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                  0.0,    0.0,    1e-9,   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                  0.0,    0.0,    0.0,    1e-9,   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                  0.0,    0.0,    0.0,    0.0,    1e-9,   0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                  0.0,    0.0,    0.0,    0.0,    0.0,    1e-9,   0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                  0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    1e-9,   0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                  0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    1e-9,   0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                  0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    1e-9,   0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                  0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    1e-9,    0.0,     0.0,     0.0,    0.0,    0.0,
+                                  0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     1e-9,    0.0,     0.0,    0.0,    0.0,
+                                  0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     1e-9,    0.0,    0.0,    0.0,
+                                  0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     1e-9,   0.0,    0.0,
+                                  0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    1e-9,   0.0,
+                                  0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    1e-9]
+
+
 navsat_transform:
   ros__parameters:
-    use_sim_time: true
+    use_sim_time: false
     frequency: 10.0
     delay: 3.0
-    magnetic_declination_radians: 0.093084220955  # For lat/long of Atlanta, Georgia
-    yaw_offset: 0.0  # if IMU reads 0 when facing magnetic north instead of east then set parameter to pi/2
+    magnetic_declination_radians: 0.00233153  # For lat/long of Atlanta, Georgia # -0.002490003
+    yaw_offset: 1.5707   # if IMU reads 0 when facing magnetic north instead of east then set parameter to pi/2
     zero_altitude: true
     broadcast_utm_transform: true
     broadcast_utm_transform_as_parent_frame: true
     publish_filtered_gps: true
-    use_odometry_yaw: false
-    wait_for_datum: true
+    use_odometry_yaw: true
+    wait_for_datum: false
+    use_local_cartesian: false

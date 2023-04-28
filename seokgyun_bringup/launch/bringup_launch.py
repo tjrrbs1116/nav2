@@ -37,26 +37,26 @@ def generate_launch_description():
     slam = LaunchConfiguration('slam')
     map_yaml_file = LaunchConfiguration('map')
     use_sim_time = LaunchConfiguration('use_sim_time')
-    
+
     map_dir = LaunchConfiguration(
         'map',
        default=os.path.join(
-            bringup_dir, 'maps', 'f1.yaml'))
-    
-    
+            bringup_dir, 'maps', 'outside_b1.yaml')) #map3
+
+
     params_file = LaunchConfiguration(
         'params_file',
           default=os.path.join(
             get_package_share_directory('seokgyun_bringup'),
             'params',
-            'nav2_params.yaml')      
+            'nav2_params.yaml')
     )
 
     rviz_config_dir = os.path.join(
         get_package_share_directory('seokgyun_bringup'),
         'rviz',
         'nav2_default_view.rviz')
-    
+
     autostart = LaunchConfiguration('autostart')
     use_composition = LaunchConfiguration('use_composition')
     use_respawn = LaunchConfiguration('use_respawn')
