@@ -260,7 +260,7 @@ class PiotConverter(Node):
 
 			self.target_linear = self.target_linear_p_term + self.target_linear_i_term #+ self.target_linear_d_term  #self.cmd_vel.linear.x
 			#self.target_angular = self.cmd_vel.angular.z #self.target_angular_p_term + self.target_angular_i_term #+ self.target_angular_d_term
-			self.target_angular = self.target_angular_p_term + self.target_angular_i_term #self.cmd_vel.angular.z
+			self.target_angular = self.cmd_vel.angular.z#self.target_angular_p_term + self.target_angular_i_term #self.cmd_vel.angular.z
 			self.log.ctrl_cmd_angular = self.target_angular # radian_target
 
 

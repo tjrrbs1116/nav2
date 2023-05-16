@@ -3,7 +3,7 @@ namespace witmotion
 
 static const std::string library_version()
 {
-    return "0.11.18-alpha~dev_f46d191";
+    return "0.11.18-alpha~dev_b594e94";
 }
 
 }

@@ -58,14 +58,14 @@ def generate_launch_description():
             default_value='false',
             description='Use simulation (Gazebo) clock if true'),
 
-        Node(
-             package='robot_localization',
-             executable='ekf_node',
-             name='ekf_filter_node_map',
-             parameters=[config_dir, {'use_sim_time': use_sim_time}],
-             output='screen',
-             remappings=[('/odometry/filtered','/odom/global'),
-                         ('/set_pose', '/initialpose')]),
+        # Node(
+        #      package='robot_localization',
+        #      executable='ekf_node',
+        #      name='ekf_filter_node_map',
+        #      parameters=[config_dir, {'use_sim_time': use_sim_time}],
+        #      output='screen',
+        #      remappings=[('/odometry/filtered','/odom/global'),
+        #                  ('/set_pose', '/initialpose')]),
 
         # Node(
         #      package='robot_localization',

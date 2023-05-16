@@ -51,7 +51,7 @@ def generate_launch_description():
                                              remappings=[
                                                ('/ublox_gps_node/fix','gps/fix'),
                                                ('/rtcm','smc_2000/rtcm'),
-                                               ('ublox_gps_node/fix_velocity', 'gps/fix_velocity')
+                                               ('ublox_gps_node/fix_velocity', '/smc_2000/fix_velocity')
                                              ]
                                              )
 

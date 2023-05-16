@@ -27,3 +27,4 @@ ublox_gps_node:
         hui: false
       nav:
         posecef: false
+        relposned: true
