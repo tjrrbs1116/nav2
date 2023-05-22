@@ -102,8 +102,8 @@ class PiotConverter(Node):
 		self.first_flag = False
 		self.old_linear_error = 0.0
 		self.old_angular_error = 0.0
-
-
+		self.only_rotation =0
+		self.rotation_flag = False
 		self.fb = CtrlFb()
 		self.mode_flag = True
 
@@ -250,6 +250,19 @@ class PiotConverter(Node):
 			if self.angular_error < -0.3 :
 				self.angular_error = -0.3
 
+
+			# if self.cmd_vel.angular.z > 0 :
+			# 	if self.cmd_vel.linear.x == 0:
+			# 		self.only_rotation +1
+			# 	else :
+			# 		self.only_rotation = 0
+
+			# if self.only_rotation >10 :
+			# 	self.rotation_flag = True
+
+			# if self.rotation_flag ==True :
+
+
 			# self.target_linear_p_term += self.P_gain*(linear_error)
 			self.target_linear_p_term = self.P_gain*(self.linear_error)
 			self.target_linear_i_term += self.I_gain*(self.linear_error)*dt
@@ -258,7 +271,7 @@ class PiotConverter(Node):
 			self.target_angular_i_term  += self.I_a_gain*(self.angular_error)*dt
 			self.target_angular_d_term = self.D_a_gain*((self.angular_error - self.old_angular_error) / dt)
 
-			self.target_linear = self.target_linear_p_term + self.target_linear_i_term #+ self.target_linear_d_term  #self.cmd_vel.linear.x
+			self.target_linear = self.cmd_vel.linear.x #self.target_linear_p_term + self.target_linear_i_term #+ self.target_linear_d_term  #self.cmd_vel.linear.x
 			#self.target_angular = self.cmd_vel.angular.z #self.target_angular_p_term + self.target_angular_i_term #+ self.target_angular_d_term
 			self.target_angular = self.cmd_vel.angular.z#self.target_angular_p_term + self.target_angular_i_term #self.cmd_vel.angular.z
 			self.log.ctrl_cmd_angular = self.target_angular # radian_target
