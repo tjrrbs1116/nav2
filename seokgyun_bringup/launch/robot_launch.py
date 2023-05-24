@@ -84,9 +84,9 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([robot_localization_pkg_dir, '/gps_robot_localization_launch.py']),
         ),
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([gps_pkg_dir, '/ublox_gps_node_base-launch.py']),
-        ),
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource([gps_pkg_dir, '/ublox_gps_node_base-launch.py']),
+        # ),
 
         # IncludeLaunchDescription(
         #     PythonLaunchDescriptionSource([gps_pkg_dir, '/ublox_gps_node_rover-launch.py']),
