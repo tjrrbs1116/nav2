@@ -18,6 +18,9 @@ witmotion:
         orientation:
           enabled: true
           covariance: [0.0479, 0.0, 0.0, 0.0, 0.0207, 0.0, 0.0, 0.0, 0.0041]
+        # orientation:
+        #   enabled: true
+        #   covariance: [ 0.0190, 0.0, 0.0, 0.0, 0.0120, 0.0, 0.0, 0.0, 0.0107]
     temperature_publisher:
       enabled: true
       topic_name: /temperature

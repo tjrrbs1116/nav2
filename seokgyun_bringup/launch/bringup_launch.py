@@ -41,7 +41,7 @@ def generate_launch_description():
     map_dir = LaunchConfiguration(
         'map',
        default=os.path.join(
-            bringup_dir, 'maps', 'namdong2.yaml')) #map3
+            bringup_dir, 'maps', 'f1.yaml')) #map3
 
 
     params_file = LaunchConfiguration(
@@ -148,14 +148,14 @@ def generate_launch_description():
             output='screen'),
 
 
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(os.path.join(launch_dir, 'slam_launch.py')),
-            condition=IfCondition(slam),
-            launch_arguments={'namespace': namespace,
-                              'use_sim_time': use_sim_time,
-                              'autostart': autostart,
-                              'use_respawn': use_respawn,
-                              'params_file': params_file}.items()),
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource(os.path.join(launch_dir, 'slam_launch.py')),
+        #     condition=IfCondition(slam),
+        #     launch_arguments={'namespace': namespace,
+        #                       'use_sim_time': use_sim_time,
+        #                       'autostart': autostart,
+        #                       'use_respawn': use_respawn,
+        #                       'params_file': params_file}.items()),
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(os.path.join(launch_dir,

@@ -45,7 +45,7 @@ def generate_launch_description():
         default=os.path.join(
             get_package_share_directory('piot_robot_localization'),
             'config',
-            'gps_ekf.yaml'))
+            'odom_test.yaml'))
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -77,14 +77,14 @@ def generate_launch_description():
         #                  ('/set_pose', '/initialpose')]),
 
 
-        Node(
-            package='robot_localization',
-            executable='navsat_transform_node',
-            name='navsat_transform',
-            parameters=[config_dir, {'use_sim_time': use_sim_time}],
-            output='screen',
-            remappings=[('/odom','/odom'),
-                        ('/imu/data', '/imu_sensing'),]),
+        # Node(
+        #     package='robot_localization',
+        #     executable='navsat_transform_node',
+        #     name='navsat_transform',
+        #     parameters=[config_dir, {'use_sim_time': use_sim_time}],
+        #     output='screen',
+        #     remappings=[('/odom','/odom'),
+        #                 ('/imu/data', '/imu_sensing'),]),
 
 
         Node(
@@ -94,6 +94,23 @@ def generate_launch_description():
             parameters=[config_dir, {'use_sim_time': use_sim_time}],
             output='screen',
             remappings=[('/odometry/filtered','/odom')]),
+
+
+        Node(
+            package='robot_localization',
+            executable='ekf_node',
+            name='ekf_filter_node_test1',
+            parameters=[config_dir, {'use_sim_time': use_sim_time}],
+            output='screen',
+            remappings=[('/odometry/filtered','/odom_test1')]),
+
+        Node(
+            package='robot_localization',
+            executable='ekf_node',
+            name='ekf_filter_node_test2',
+            parameters=[config_dir, {'use_sim_time': use_sim_time}],
+            output='screen',
+            remappings=[('/odometry/filtered','/odom_test2')]),
 
 
     ])

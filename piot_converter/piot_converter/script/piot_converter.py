@@ -110,7 +110,7 @@ class PiotConverter(Node):
 #		self.odom_pub = self.create_publisher(Odometry, 'odom', qos)
 		self.odom_pub = self.create_publisher(Odometry, '/wheel/odometry', qos)
 		#self.odom2_pub = self.create_publisher(Odometry, '/notfb_odom' ,qos)
-		# self.imu_sub = self.create_subscription(Imu, '/imu_sensing',self.imu_sub_callback,qos)
+		self.imu_sub = self.create_subscription(Imu, '/imu_sensing',self.imu_sub_callback,qos)
 		self.ctrl_fb_sub = self.create_subscription(CtrlFb, 'ctrl_fb', self.ctrl_fb_callback, qos)
 #		self.odom_broadcaster = TransformBroadcaster(self)
 		self.x = 0.0
@@ -119,6 +119,12 @@ class PiotConverter(Node):
 		self.v_x = 0.0
 		self.v_y = 0.0
 		self.v_th = 0.0
+		self.imu_v_th=0.0
+
+		self.ahrs_x =0.0
+		self.ahrs_y =0.0
+		self.ahrs_z =0.0
+		self.ahrs_w =0.0
 
 		## not fb odom data
 		self.nf_x = 0.0
@@ -132,11 +138,16 @@ class PiotConverter(Node):
 		self.last_time = self.get_clock().now().to_msg()
 		self.timer = self.create_timer(0.01, self.timer_callback)
 
-	# def imu_sub_callback(self,msg):
-	# 	if(self.imu_calibration_flag == False):
-	# 		euler = euler_from_quaternion(msg.orientation.x , msg.orientation.y , msg.orientation.z , msg.orientation.w)
-	# 		self.th = euler[2] #radian th
-	# 		self.imu_calibration_flag = True
+	def imu_sub_callback(self,msg):
+		euler = euler_from_quaternion(msg.orientation.x , msg.orientation.y , msg.orientation.z , msg.orientation.w)
+		self.th = euler[2] #radian th
+		self.ahrs_x = msg.orientation.x
+		self.ahrs_y = msg.orientation.y
+		self.ahrs_z = msg.orientation.z
+		self.ahrs_w = msg.orientation.w
+
+		self.imu_v_th = msg.angular_velocity.z
+		self.imu_calibration_flag = True
 
 	def cmd_vel_callback(self, msg):
 #		if self.mode_flag == True:
@@ -299,6 +310,7 @@ class PiotConverter(Node):
 
 		delta_x = (self.v_x * cos(self.th) - self.v_y * sin(self.th)) * dt
 		delta_y = (self.v_x * sin(self.th) + self.v_y * cos(self.th)) * dt
+		#delta_th= self.imu_v_th
 		delta_th = self.v_th * dt
 
 		# delta_nf_x = (self.nf_v_x * cos(self.nf_th) - self.nf_v_y * sin(self.nf_th)) * dt
@@ -311,7 +323,7 @@ class PiotConverter(Node):
 
 		self.x += delta_x
 		self.y += delta_y
-		self.th += delta_th
+		#self.th += delta_th
 		# self.get_logger().info("x is : %.4f" % self.x)
 		# self.get_logger().info("y is : %.4f" % self.y)
 		# q1 =quaternion_from_euler(0,0,self.nf_th)
@@ -341,14 +353,18 @@ class PiotConverter(Node):
 		odom.pose.pose.position.y = self.y
 		odom.pose.pose.position.z = 0.0
 
-		odom.pose.pose.orientation.x = q[0]
-		odom.pose.pose.orientation.y = q[1]
-		odom.pose.pose.orientation.z = q[2]
-		odom.pose.pose.orientation.w = q[3]
+		# odom.pose.pose.orientation.x = q[0]
+		# odom.pose.pose.orientation.y = q[1]
+		# odom.pose.pose.orientation.z = q[2]
+		# odom.pose.pose.orientation.w = q[3]
+		odom.pose.pose.orientation.x = self.ahrs_x
+		odom.pose.pose.orientation.y = self.ahrs_y
+		odom.pose.pose.orientation.z = self.ahrs_z
+		odom.pose.pose.orientation.w = self.ahrs_w
 
 		odom.twist.twist.linear.x = self.v_x
 		odom.twist.twist.linear.y = self.v_y
-		odom.twist.twist.angular.z = self.v_th
+		odom.twist.twist.angular.z = self.imu_v_th #self.v_th
 
 		# self.odom2_pub.publish(odom_nf)
 		self.odom_pub.publish(odom)
