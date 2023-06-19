@@ -554,6 +554,9 @@ AmclNode::handleInitialPose(geometry_msgs::msg::PoseWithCovarianceStamped & msg)
     tx_odom = tf_buffer_->lookupTransform(
       base_frame_id_, tf2_ros::fromMsg(msg.header.stamp),
       base_frame_id_, tf2_time, odom_frame_id_);
+
+      RCLCPP_INFO(get_logger(),"(%s),",tx_odom.child_frame_id.c_str());
+      RCLCPP_INFO(get_logger(),"x: %f, y: %f , z : %f",tx_odom.transform.translation.x,tx_odom.transform.translation.y,tx_odom.transform.translation.z);
   } catch (tf2::TransformException & e) {
     // If we've never sent a transform, then this is normal, because the
     // global_frame_id_ frame doesn't exist.  We only care about in-time
@@ -620,12 +623,14 @@ AmclNode::laserReceived(sensor_msgs::msg::LaserScan::ConstSharedPtr laser_scan)
     return;
   }
 
+
   std::string laser_scan_frame_id = nav2_util::strip_leading_slash(laser_scan->header.frame_id);
   last_laser_received_ts_ = now();
   int laser_index = -1;
   geometry_msgs::msg::PoseStamped laser_pose;
 
   // Do we have the base->base_laser Tx yet?
+  //여러 라이다센서일때의 가정한 map인가 ?
   if (frame_to_laser_.find(laser_scan_frame_id) == frame_to_laser_.end()) {
     if (!addNewScanner(laser_index, laser_scan, laser_scan_frame_id, laser_pose)) {
       return;  // could not find transform

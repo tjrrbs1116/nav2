@@ -124,6 +124,12 @@ def generate_launch_description():
                 remappings=remappings),
 
             Node(
+                package='debug',
+                executable='debug',
+                name='map2odom',
+                output='screen'),
+
+            Node(
                 package='nav2_lifecycle_manager',
                 executable='lifecycle_manager',
                 name='lifecycle_manager_localization',
@@ -145,6 +151,13 @@ def generate_launch_description():
                 name='map_server',
                 parameters=[configured_params],
                 remappings=remappings),
+
+            Node(
+                package='debug',
+                executable='debug',
+                name='map2odom',
+                output='screen'),
+                
             ComposableNode(
                 package='nav2_lifecycle_manager',
                 plugin='nav2_lifecycle_manager::LifecycleManager',

@@ -67,7 +67,10 @@ def generate_launch_description():
     #              https://github.com/ros2/launch_ros/issues/56
     remappings = [('/tf', 'tf'),
                   ('/tf_static', 'tf_static')]
+    
 
+    robot_localization_pkg_dir =os.path.join(get_package_share_directory('piot_robot_localization'),'launch')
+    
     # Declare the launch arguments
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
@@ -217,6 +220,15 @@ def generate_launch_description():
                           'autostart': autostart,
                           'use_composition': use_composition,
                           'use_respawn': use_respawn}.items())
+    
+    robot_localization_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(robot_localization_pkg_dir, '/gps_robot_localization_launch.py')),
+        launch_arguments={'use_sim_time': use_sim_time}.items()
+
+        )
+
+    
 
     # Create the launch description and populate
     ld = LaunchDescription()
@@ -250,5 +262,6 @@ def generate_launch_description():
     ld.add_action(start_robot_state_publisher_cmd)
     ld.add_action(rviz_cmd)
     ld.add_action(bringup_cmd)
+    ld.add_action(robot_localization_cmd)
 
     return ld

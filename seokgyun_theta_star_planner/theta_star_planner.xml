@@ -1,5 +1,0 @@
-<library path="seokgyun_theta_star_planner">
-    <class name="seokgyun_theta_star_planner/ThetaStarPlanner" type="nav2_theta_star_planner::ThetaStarPlanner" base_class_type="nav2_core::GlobalPlanner">
-        <description>An implementation of the Theta* Algorithm</description>
-    </class>
-</library>

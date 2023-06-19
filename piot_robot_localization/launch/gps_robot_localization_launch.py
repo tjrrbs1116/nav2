@@ -96,21 +96,21 @@ def generate_launch_description():
             remappings=[('/odometry/filtered','/odom')]),
 
 
-        Node(
-            package='robot_localization',
-            executable='ekf_node',
-            name='ekf_filter_node_test1',
-            parameters=[config_dir, {'use_sim_time': use_sim_time}],
-            output='screen',
-            remappings=[('/odometry/filtered','/odom_test1')]),
+        # Node(
+        #     package='robot_localization',
+        #     executable='ekf_node',
+        #     name='ekf_filter_node_test1',
+        #     parameters=[config_dir, {'use_sim_time': use_sim_time}],
+        #     output='screen',
+        #     remappings=[('/odometry/filtered','/odom_test1')]),
 
-        Node(
-            package='robot_localization',
-            executable='ekf_node',
-            name='ekf_filter_node_test2',
-            parameters=[config_dir, {'use_sim_time': use_sim_time}],
-            output='screen',
-            remappings=[('/odometry/filtered','/odom_test2')]),
+        # Node(
+        #     package='robot_localization',
+        #     executable='ekf_node',
+        #     name='ekf_filter_node_test2',
+        #     parameters=[config_dir, {'use_sim_time': use_sim_time}],
+        #     output='screen',
+        #     remappings=[('/odometry/filtered','/odom_test2')]),
 
 
     ])

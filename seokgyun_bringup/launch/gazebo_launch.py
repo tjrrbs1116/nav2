@@ -139,6 +139,6 @@ def generate_launch_description():
     #ld.add_action(joint_state_publisher_node)
     ld.add_action(gzserver_cmd)
     ld.add_action(start_gazebo_client_cmd)
-    ld.add_action(localization_cmd2)
+    # ld.add_action(localization_cmd2)
     return ld
 
