@@ -136,7 +136,7 @@ class PiotConverter(Node):
 
 		self.current_time = self.get_clock().now().to_msg()
 		self.last_time = self.get_clock().now().to_msg()
-		self.timer = self.create_timer(0.01, self.timer_callback)
+		self.timer = self.create_timer(0.05, self.timer_callback)
 
 	def imu_sub_callback(self,msg):
 		euler = euler_from_quaternion(msg.orientation.x , msg.orientation.y , msg.orientation.z , msg.orientation.w)
@@ -146,7 +146,7 @@ class PiotConverter(Node):
 		self.ahrs_z = msg.orientation.z
 		self.ahrs_w = msg.orientation.w
 
-		self.imu_v_th = msg.angular_velocity.z
+		#self.imu_v_th = msg.angular_velocity.z
 		self.imu_calibration_flag = True
 
 	def cmd_vel_callback(self, msg):
@@ -323,7 +323,7 @@ class PiotConverter(Node):
 
 		self.x += delta_x
 		self.y += delta_y
-		#self.th += delta_th
+		# self.th += delta_th
 		# self.get_logger().info("x is : %.4f" % self.x)
 		# self.get_logger().info("y is : %.4f" % self.y)
 		# q1 =quaternion_from_euler(0,0,self.nf_th)
@@ -364,7 +364,7 @@ class PiotConverter(Node):
 
 		odom.twist.twist.linear.x = self.v_x
 		odom.twist.twist.linear.y = self.v_y
-		odom.twist.twist.angular.z = self.imu_v_th #self.v_th
+		odom.twist.twist.angular.z = self.v_th #self.imu_v_th 
 
 		# self.odom2_pub.publish(odom_nf)
 		self.odom_pub.publish(odom)

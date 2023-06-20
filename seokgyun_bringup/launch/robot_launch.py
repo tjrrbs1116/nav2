@@ -68,9 +68,9 @@ def generate_launch_description():
             PythonLaunchDescriptionSource([can_control_pkg_dir, '/can_control_launch.py']),
         ),
 
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([converter_pkg_dir, '/converter_launch.py']),
-        ),
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource([converter_pkg_dir, '/converter_launch.py']),
+        # ),
 
 
         ## only lidar +imu
@@ -81,9 +81,9 @@ def generate_launch_description():
 
         ## + gps
 
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([robot_localization_pkg_dir, '/gps_robot_localization_launch.py']),
-        ),
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource([robot_localization_pkg_dir, '/gps_robot_localization_launch.py']),
+        # ),
         # IncludeLaunchDescription(
         #     PythonLaunchDescriptionSource([gps_pkg_dir, '/ublox_gps_node_base-launch.py']),
         # ),

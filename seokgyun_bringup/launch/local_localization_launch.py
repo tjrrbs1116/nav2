@@ -17,6 +17,12 @@ def generate_launch_description():
     robot_localization_pkg_dir = LaunchConfiguration(
         'robot_localization_pkg_dir',
         default=os.path.join(get_package_share_directory('piot_robot_localization'),'launch'))
+    
+
+    converter_pkg_dir = LaunchConfiguration(
+        'converter_pkg_dir',
+        default=os.path.join(get_package_share_directory('piot_converter')))
+    
 
     return LaunchDescription([
 
@@ -30,5 +36,9 @@ def generate_launch_description():
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([robot_localization_pkg_dir, '/gps_robot_localization_launch.py']),
+        ),
+
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([converter_pkg_dir, '/converter_launch.py']),
         ),
     ])
