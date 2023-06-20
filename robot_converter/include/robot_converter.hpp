@@ -54,7 +54,7 @@ namespace robot_converter
             rclcpp::Subscription<piot_can_msgs::msg::CtrlFb>::SharedPtr ctrl_fb_sub;
             rclcpp::Subscription<piot_can_msgs::msg::IoFb>::SharedPtr io_fb_sub;
             rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub;
-            // piot_can_msgs::msg::CtrlCmd 
+            // piot_can_msgs::msg::CtrlCmd
 
             rclcpp::TimerBase::SharedPtr timer_;
 

@@ -32,7 +32,7 @@ include_directories(
 set(executable_name robot_converter)
 add_executable(${executable_name}
   src/main.cpp
-  src/robot_converter.cpp
+
 )
 set(library_name ${executable_name}_core)
 
@@ -53,7 +53,7 @@ set(dependencies
 
 add_library(${library_name} SHARED
   src/main.cpp
-  # src/map2odom.cpp
+  src/robot_converter.cpp
 )
 
 ament_target_dependencies(${executable_name}
@@ -64,6 +64,12 @@ target_link_libraries(${executable_name} ${library_name})
 
 ament_target_dependencies(${library_name}
   ${dependencies}
+)
+
+
+install(
+  DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
 )
 
 install(TARGETS ${library_name}

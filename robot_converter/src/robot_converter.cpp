@@ -40,7 +40,7 @@ namespace robot_converter{
     }
 
     void robot_converter::timerCallback(){
-        RCLCPP_INFO(get_logger(),"timer callback");
+        // RCLCPP_INFO(get_logger(),"timer callback");
         time_n = this->now();
         float dt;
         if(time_flag){dt = (time_n.seconds() - time_o.seconds()) + (time_n.nanoseconds()/1e+9 - time_o.nanoseconds()/1e+9);}
@@ -62,13 +62,13 @@ namespace robot_converter{
     }
 
     void robot_converter::odomfix(){
-        
-        
+
+
         float quaternion[4];
         robot_converter::quaternion_from_euler(0,0,c_robot.th ,quaternion);
         odom.header.stamp = this->now();
-        odom.header.frame_id = 'odom';
-        odom.child_frame_id = 'base_link';
+        odom.header.frame_id = "odom";
+        odom.child_frame_id = "base_link";
 
         odom.pose.pose.position.x = c_robot.x;
         odom.pose.pose.position.y = c_robot.y;
@@ -81,14 +81,14 @@ namespace robot_converter{
         odom.pose.pose.orientation.x = quaternion[0];
         odom.pose.pose.orientation.y = quaternion[1];
         odom.pose.pose.orientation.z = quaternion[2];
-        odom.pose.pose.orientation.w = quaternion[3];        
+        odom.pose.pose.orientation.w = quaternion[3];
         odom_pub->publish(odom);
 
         #ifdef imu_wheel
 
         odom2.header.stamp = this->now();
-        odom2.header.frame_id = 'odom';
-        odom2.child_frame_id = 'base_link2';
+        odom2.header.frame_id = "odom";
+        odom2.child_frame_id = "base_link2";
 
         odom2.pose.pose.position.x = c_robot2.x;
         odom2.pose.pose.position.y = c_robot2.y;
@@ -107,7 +107,7 @@ namespace robot_converter{
 
     }
     void robot_converter::Cmd_VelReceived(const geometry_msgs::msg::Twist::SharedPtr msg)
-    {   
+    {
         cmd.ctrl_cmd_gear = 6;
         cmd.ctrl_cmd_linear = msg->linear.x;
         cmd.ctrl_cmd_angular = msg->angular.z * 57.2958;
@@ -125,11 +125,10 @@ namespace robot_converter{
     void robot_converter::CtrlFb_Received(const piot_can_msgs::msg::CtrlFb::SharedPtr msg)
     {
         fb = *msg;
-        RCLCPP_INFO(get_logger(),"ctrlfb callback");
         if (fb.ctrl_fb_gear ==6 ){
             c_robot.v_x = fb.ctrl_fb_linear ;
             c_robot.v_y = 0.0;
-            c_robot.v_th = fb.ctrl_fb_angular * 0.0174533; //deg2rad 
+            c_robot.v_th = fb.ctrl_fb_angular * 0.0174533; //deg2rad
             #ifdef imu_wheel
             c_robot2.v_x = fb.ctrl_fb_linear ;
             c_robot2.v_y = 0.0;
@@ -153,7 +152,7 @@ namespace robot_converter{
             c_robot2.v_th = current_imu.angular_velocity.z;
             #endif
         }
-        
+
 
     }
 

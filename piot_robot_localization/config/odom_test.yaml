@@ -37,7 +37,7 @@ ekf_filter_node:
 # Debug settings. Not for the faint of heart. Outputs a ludicrous amount of information to the file specified by
 # debug_out_file. I hope you like matrices! Please note that setting this to true will have strongly deleterious
 # effects on the performance of the node. Defaults to false if unspecified.
-        debug: True
+        debug: false
 
 # Defaults to "robot_localization_debug.txt" if unspecified. Please specify the full path.
         debug_out_file: debug.txt
@@ -90,10 +90,10 @@ ekf_filter_node:
 # do not provide some of the state variables estimated by the filter. For example, a TwistWithCovarianceStamped message
 # has no pose information, so the first six values would be meaningless in that case. Each vector defaults to all false
 # if unspecified, effectively making this parameter required for each sensor.
-        odom0_config: [true, true, false,
+        odom0_config: [false, false, false,
+                       false, false, false,
+                       true, false, false,
                        false, false, true,
-                       false, false, false,
-                       false, false, false,
                        false, false, false]
 
         #        [x_pos   , y_pos    , z_pos,
@@ -139,7 +139,7 @@ ekf_filter_node:
 
         imu0: imu_sensing
         imu0_config: [false, false, false,
-                      false, false, false,
+                      true, true, true,
                       false, false, false,
                       false, false, false,
                       false, false, false]
@@ -255,9 +255,9 @@ ekf_filter_node_test1:
         reset_on_time_jump: true
 
         # map_frame: map                   # Defaults to "map" if unspecified
-        odom_frame: odom                 # Defaults to "odom" if unspecified
-        base_link_frame: base_footprint  # Defaults to "base_link" if unspecified
-        world_frame: odom               # Defaults to the value of odom_frame if unspecified
+        odom_frame: odom2                 # Defaults to "odom" if unspecified
+        base_link_frame: base_link2  # Defaults to "base_link" if unspecified
+        world_frame: odom2               # Defaults to the value of odom_frame if unspecified
 
 
 
@@ -265,8 +265,8 @@ ekf_filter_node_test1:
 
         odom0_config: [false, false, false,
                        false, false, false,
-                       true, false, false,
-                       false, false, true,
+                       false, false, false,
+                       false, false, false,
                        false, false, false]
 
         #        [x_pos   , y_pos    , z_pos,
