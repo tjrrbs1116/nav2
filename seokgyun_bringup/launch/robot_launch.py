@@ -46,9 +46,9 @@ def generate_launch_description():
         'imu_pkg_dir',
         default=os.path.join(get_package_share_directory('witmotion_ros'), 'launch'))
 
-    # depth_camera_pkg_dir = LaunchConfiguration(
-    #     'depth_camera_pkg_dir',
-    #     default=os.path.join(get_package_share_directory('astra_camera'), 'launch'))
+    depth_camera_pkg_dir = LaunchConfiguration(
+        'depth_camera_pkg_dir',
+        default=os.path.join(get_package_share_directory('astra_camera'), 'launch'))
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
 
@@ -109,7 +109,7 @@ def generate_launch_description():
         #     PythonLaunchDescriptionSource([imu_filter_madgwick, '/imu_filter.launch.py']),
         # ),
 
-        # IncludeLaunchDescription(
-        #     PythonLaunchDescriptionSource([depth_camera_pkg_dir, '/dabai.launch.py']),
-        # ),
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([depth_camera_pkg_dir, '/dabai.launch.py']),
+        ),
     ])

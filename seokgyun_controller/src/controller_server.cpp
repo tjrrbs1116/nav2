@@ -64,6 +64,11 @@ ControllerServer::ControllerServer(const rclcpp::NodeOptions & options)
   costmap_ros_ = std::make_shared<nav2_costmap_2d::Costmap2DROS>(
     "local_costmap", std::string{get_namespace()}, "local_costmap");
 
+  rclcpp::PublisherOptions publisher_options;
+  publisher_options.qos_overriding_options = rclcpp::QosOverridingOptions::with_default_policies();
+  debug_odom_endpose_pub = this->create_publisher<geometry_msgs::msg::PoseStamped>("debug_odom_endpose", rclcpp::QoS(10),publisher_options);
+  debug_global_pathend_pub = this->create_publisher<geometry_msgs::msg::PoseStamped>("debug_global_pathend",rclcpp::QoS(10),publisher_options);
+
   // Launch a thread to run the costmap node
   costmap_thread_ = std::make_unique<nav2_util::NodeThread>(costmap_ros_); //make a cost map node
 }
@@ -352,6 +357,8 @@ void ControllerServer::computeControl()
     std::string current_controller;
     if (findControllerId(c_name, current_controller)) {
       current_controller_ = current_controller;
+
+      RCLCPP_INFO(get_logger(), "controller_id is: [%s]" ,current_controller_.c_str());   
     } else {
       action_server_->terminate_current();
       return;
@@ -383,13 +390,14 @@ void ControllerServer::computeControl()
         publishZeroVelocity();
         return;
       }
-
+    
       // Don't compute a trajectory until costmap is valid (after clear costmap)
       rclcpp::Rate r(100);
       while (!costmap_ros_->isCurrent()) {
+
         r.sleep();
       }
-
+      
       updateGlobalPath();
 
       computeAndPublishVelocity();
@@ -439,7 +447,11 @@ void ControllerServer::setPlannerPath(const nav_msgs::msg::Path & path)
   end_pose_ = path.poses.back();
   end_pose_.header.frame_id = path.header.frame_id;
   goal_checkers_[current_goal_checker_]->reset();
+    RCLCPP_INFO(
+    get_logger(), "Path end point is (%.2f, %.2f)",
+    end_pose_.pose.position.x, end_pose_.pose.position.y);
 
+  debug_global_pathend_pub ->publish(end_pose_);
   RCLCPP_DEBUG(
     get_logger(), "Path end point is (%.2f, %.2f)",
     end_pose_.pose.position.x, end_pose_.pose.position.y);
@@ -577,7 +589,7 @@ bool ControllerServer::isGoalReached()
   if (!getRobotPose(pose)) {
     return false;
   }
-
+  //pose is odom frame 
   nav_2d_msgs::msg::Twist2D twist = getThresholdedTwist(odom_sub_->getTwist());
   geometry_msgs::msg::Twist velocity = nav_2d_utils::twist2Dto3D(twist);
 
@@ -586,10 +598,22 @@ bool ControllerServer::isGoalReached()
   nav_2d_utils::transformPose(
     costmap_ros_->getTfBuffer(), costmap_ros_->getGlobalFrameID(),
     end_pose_, transformed_end_pose, tolerance);
+  //end pose is global local path end point
+  //transformed_end_pose is transformed end pose to odom frame in our setting
 
+  
+  debug_odom_endpose_pub->publish(transformed_end_pose);
+    // RCLCPP_INFO(get_logger(),"pose  position is %f , %f  ",
+    // pose.pose.position.x, pose.pose.position.y );
+    //  RCLCPP_INFO(get_logger(),"trans_end_pose  position is %f , %f  ",
+    // transformed_end_pose.pose.position.x, transformed_end_pose.pose.position.y );
+    // RCLCPP_INFO(get_logger(),"trans_end_pose  oreientation is %f , %f , %f , %f ",
+    // transformed_end_pose.pose.orientation.x, transformed_end_pose.pose.orientation.y,transformed_end_pose.pose.orientation.z, transformed_end_pose.pose.orientation.w );
   return goal_checkers_[current_goal_checker_]->isGoalReached(
     pose.pose, transformed_end_pose.pose,
     velocity);
+
+
 }
 
 bool ControllerServer::getRobotPose(geometry_msgs::msg::PoseStamped & pose)

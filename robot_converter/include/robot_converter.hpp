@@ -113,6 +113,25 @@ namespace robot_converter
             rclcpp::Time time_n;
             rclcpp::Time time_o;
 
+            float pose_covariance[36] ={
+                0.01, 0., 0., 0., 0., 0.,
+                0.,  0.01, 0., 0., 0., 0., 
+                0.,  0.,   0., 0., 0., 0.,
+                0.,  0.,   0., 0.0479, 0., 0.,
+                0.,  0.,   0., 0., 0.0207, 0.,
+                0.,  0.,   0., 0., 0.,  0.0378
+            };
+
+            float twist_covariance[36]={
+                0.01 , 0. , 0. , 0. , 0. , 0. ,
+                0.   , 0. , 0. , 0. , 0. , 0. ,
+                0.   , 0. , 0. , 0. , 0. , 0. ,
+                0.   , 0. , 0. , 0.0663 , 0. , 0. ,
+                0.   , 0. , 0. , 0. , 0.02 , 0. ,
+                0.   , 0. , 0. , 0. , 0. , 0.25
+
+            };
+
             piot_can_msgs::msg::CtrlCmd cmd;
             piot_can_msgs::msg::CtrlFb fb;
             bool time_flag ;

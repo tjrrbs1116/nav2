@@ -221,7 +221,8 @@ protected:
   std::unique_ptr<nav_2d_utils::OdomSubscriber> odom_sub_;
   rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::Twist>::SharedPtr vel_publisher_;
   rclcpp::Subscription<nav2_msgs::msg::SpeedLimit>::SharedPtr speed_limit_sub_;
-
+  rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr debug_odom_endpose_pub;
+  rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr debug_global_pathend_pub;
   // Progress Checker Plugin
   pluginlib::ClassLoader<nav2_core::ProgressChecker> progress_checker_loader_;
   nav2_core::ProgressChecker::Ptr progress_checker_;

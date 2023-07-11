@@ -42,23 +42,30 @@ namespace robot_converter{
     void robot_converter::timerCallback(){
         // RCLCPP_INFO(get_logger(),"timer callback");
         time_n = this->now();
-        float dt;
-        if(time_flag){dt = (time_n.seconds() - time_o.seconds()) + (time_n.nanoseconds()/1e+9 - time_o.nanoseconds()/1e+9);}
-        else{dt =0.0;}
+        float dt= 0.01;
+        // if(time_flag){dt = (time_n.seconds() - time_o.seconds()) + (time_n.nanoseconds()/1e+9 - time_o.nanoseconds()/1e+9);}
+        // else{dt =0.0;}
 
         float dx = (c_robot.v_x * cos (c_robot.th) - c_robot.v_y * sin(c_robot.th)) * dt ;
         float dy = (c_robot.v_x * sin (c_robot.th) - c_robot.v_y * cos(c_robot.th)) * dt ;
+
+        float euler[3];
+        robot_converter::euler_from_quaternion(current_imu.orientation.x, current_imu.orientation.y , current_imu.orientation.z, current_imu.orientation.w, euler);
+        c_robot2.th = euler[2];
+
+        float dx2 = (c_robot2.v_x * cos (c_robot2.th) - c_robot2.v_y * sin(c_robot2.th)) * dt ;
+        float dy2= (c_robot2.v_x * sin (c_robot2.th) - c_robot2.v_y * cos(c_robot2.th)) * dt ;
         float dth = c_robot.v_th * dt ;
         c_robot.x += dx;
         c_robot.y += dy;
-        c_robot2.x += dx;
-        c_robot2.y += dy;
+        c_robot2.x += dx2;
+        c_robot2.y += dy2;
         c_robot.th += dth;
 
         robot_converter::odomfix();
 
-        time_o = time_n;
-        if(!time_flag){time_flag =true;}
+        // time_o = time_n;
+        // if(!time_flag){time_flag =true;}
     }
 
     void robot_converter::odomfix(){
@@ -82,6 +89,11 @@ namespace robot_converter{
         odom.pose.pose.orientation.y = quaternion[1];
         odom.pose.pose.orientation.z = quaternion[2];
         odom.pose.pose.orientation.w = quaternion[3];
+        for(int i=0; i<36; i++)
+        {odom.pose.covariance[i] = pose_covariance[i];}
+        for(int i=0; i<36; i++)
+        {odom.twist.covariance[i] =twist_covariance[i];}
+
         odom_pub->publish(odom);
 
         #ifdef imu_wheel
@@ -102,6 +114,11 @@ namespace robot_converter{
         odom2.pose.pose.orientation.y = current_imu.orientation.y;
         odom2.pose.pose.orientation.z = current_imu.orientation.z;
         odom2.pose.pose.orientation.w = current_imu.orientation.w;
+
+        for(int i=0; i<36; i++)
+        {odom2.pose.covariance[i] = pose_covariance[i];}
+        for(int i=0; i<36; i++)
+        {odom2.twist.covariance[i] =twist_covariance[i];}
         odom_pub2->publish(odom2);
         #endif
 
@@ -159,9 +176,6 @@ namespace robot_converter{
     void robot_converter::Imu_Received(const sensor_msgs::msg::Imu::SharedPtr msg)
     {
         current_imu = *msg;
-        float euler[3];
-        robot_converter::euler_from_quaternion(msg->orientation.x, msg->orientation.y , msg->orientation.z, msg->orientation.w, euler);
-        c_robot2.th = euler[2];
 
     }
 

@@ -17,10 +17,33 @@ from geometry_msgs.msg import PoseStamped
 from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
 import rclpy
 from rclpy.duration import Duration
-
+import numpy as np
+import math
 """
 Basic navigation demo to go to pose.
 """
+def quaternion_from_euler(ai, aj, ak):
+    ai /= 2.0
+    aj /= 2.0
+    ak /= 2.0
+    ci = math.cos(ai)
+    si = math.sin(ai)
+    cj = math.cos(aj)
+    sj = math.sin(aj)
+    ck = math.cos(ak)
+    sk = math.sin(ak)
+    cc = ci*ck
+    cs = ci*sk
+    sc = si*ck
+    ss = si*sk
+
+    q = np.empty((4, ))
+    q[0] = cj*sc - sj*cs
+    q[1] = cj*ss + sj*cc
+    q[2] = cj*cs - sj*sc
+    q[3] = cj*cc + sj*ss
+
+    return q
 
 
 def main():
@@ -29,14 +52,14 @@ def main():
     navigator = BasicNavigator()
 
     # Set our demo's initial pose
-    initial_pose = PoseStamped()
-    initial_pose.header.frame_id = 'map'
-    initial_pose.header.stamp = navigator.get_clock().now().to_msg()
-    initial_pose.pose.position.x = 0.4
-    initial_pose.pose.position.y = -0.579
-    initial_pose.pose.orientation.z = 0.9996
-    initial_pose.pose.orientation.w = 0.0259
-    navigator.setInitialPose(initial_pose)
+    # initial_pose = PoseStamped()
+    # initial_pose.header.frame_id = 'map'
+    # initial_pose.header.stamp = navigator.get_clock().now().to_msg()
+    # initial_pose.pose.position.x = 0.4
+    # initial_pose.pose.position.y = -0.579
+    # initial_pose.pose.orientation.z = 0.9996
+    # initial_pose.pose.orientation.w = 0.0259
+    # navigator.setInitialPose(initial_pose)
 
     # Activate navigation, if not autostarted. This should be called after setInitialPose()
     # or this will initialize at the origin of the map and update the costmap with bogus readings.
@@ -44,7 +67,7 @@ def main():
     # navigator.lifecycleStartup()
 
     # Wait for navigation to fully activate, since autostarting nav2
-    navigator.waitUntilNav2Active()
+    # navigator.waitUntilNav2Active()
 
     # If desired, you can change or load the map as well
     # navigator.changeMap('/path/to/map.yaml')
@@ -58,9 +81,15 @@ def main():
     goal_pose = PoseStamped()
     goal_pose.header.frame_id = 'map'
     goal_pose.header.stamp = navigator.get_clock().now().to_msg()
-    goal_pose.pose.position.x = -6.0
-    goal_pose.pose.position.y = -1.5
-    goal_pose.pose.orientation.w = 1.0
+    goal_pose.pose.position.x = -0.2115
+    goal_pose.pose.position.y = -1.1541
+
+    q= quaternion_from_euler(0,0,75)
+
+    goal_pose.pose.orientation.x = q[0]
+    goal_pose.pose.orientation.y = q[1]
+    goal_pose.pose.orientation.z = q[2]
+    goal_pose.pose.orientation.w = q[3]
 
     # sanity check a valid path exists
     # path = navigator.getPath(initial_pose, goal_pose)
@@ -104,7 +133,7 @@ def main():
     else:
         print('Goal has an invalid return status!')
 
-    navigator.lifecycleShutdown()
+    # navigator.lifecycleShutdown()
 
     exit(0)
 
