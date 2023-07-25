@@ -190,7 +190,7 @@ void VoxelLayer::updateBounds(
     for (; iter_x != iter_x.end(); ++iter_x, ++iter_y, ++iter_z) {
       // if the obstacle is too high or too far away from the robot we won't add it
 
-      if (*iter_z < 0.15 ){continue;}
+      if (*iter_z < 0.10 ){continue;}
       if (*iter_z > max_obstacle_height_) {
         continue;
       }

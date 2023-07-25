@@ -1,0 +1,4 @@
+navigation:
+  path_nav: /home/piot/map.yaml
+save_map:
+  path_save_map: ''

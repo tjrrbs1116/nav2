@@ -246,8 +246,10 @@ class RPLidarScanPublisher : public rclcpp::Node
 
         bool reversed = (angle_max > angle_min);
         if ( reversed ) {
-        scan_msg->angle_min =  M_PI - angle_max;
-        scan_msg->angle_max =  M_PI - angle_min;
+        // scan_msg->angle_min =  M_PI - angle_max;
+        // scan_msg->angle_max =  M_PI - angle_min;
+        scan_msg->angle_min =  0.0;
+        scan_msg->angle_max =  2*M_PI ;
         } else {
         scan_msg->angle_min =  M_PI - angle_min;
         scan_msg->angle_max =  M_PI - angle_max;
@@ -431,7 +433,7 @@ public:
                                     int angle_compensate_nodes_index = angle_value-angle_compensate_offset+j;
                                     if(angle_compensate_nodes_index >= angle_compensate_nodes_count) 
                                     angle_compensate_nodes_index = angle_compensate_nodes_count-1;
-                                    if(angle_compensate_nodes_index >145 && angle_compensate_nodes_index<200){continue;}
+                                    // if(angle_compensate_nodes_index >145 && angle_compensate_nodes_index<200){continue;}
                                     // if(angle_compensate_nodes_index >330 && angle_compensate_nodes_index<360){continue;}
                                     angle_compensate_nodes[angle_compensate_nodes_index] = nodes[i];
                                 }

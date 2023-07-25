@@ -45,16 +45,16 @@ def main():
     goal_pose = PoseStamped()
     goal_pose.header.frame_id = 'map'
     goal_pose.header.stamp = navigator.get_clock().now().to_msg()
-    goal_pose.pose.position.x = 10.66
-    goal_pose.pose.position.y = 5.89
+    goal_pose.pose.position.x =  3.22
+    goal_pose.pose.position.y = 0.044
     goal_pose.pose.orientation.w = 0.25
 
     # Get the path, smooth it
     path = navigator.getPath(initial_pose, goal_pose)
-    smoothed_path = navigator.smoothPath(path)
+    # smoothed_path = navigator.smoothPath(path)
 
     # Follow path
-    navigator.followPath(smoothed_path)
+    navigator.followPath(path)
 
     i = 0
     while not navigator.isTaskComplete():
@@ -84,7 +84,7 @@ def main():
     else:
         print('Goal has an invalid return status!')
 
-    navigator.lifecycleShutdown()
+    # navigator.lifecycleShutdown()
 
     exit(0)
 

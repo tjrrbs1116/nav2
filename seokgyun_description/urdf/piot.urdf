@@ -162,7 +162,7 @@
   <joint name="scan_joint" type="fixed">
     <parent link="base_link"/>
     <child link="base_scan"/>
-    <origin xyz="${base_length/2 -lidar_xoff } 0.0 ${base_height}" rpy="0.0 0.0 3.14"/>
+    <origin xyz="${base_length/2 -lidar_xoff } 0.0 ${base_height}" rpy="0.0 0.0 0.0"/>
   </joint>
 
   <link name="base_scan" />

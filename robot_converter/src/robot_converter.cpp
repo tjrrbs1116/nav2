@@ -28,7 +28,7 @@ namespace robot_converter{
         ctrl_cmd_pub = create_publisher<piot_can_msgs::msg::CtrlCmd>("ctrl_cmd",1);
         odom_pub = create_publisher<nav_msgs::msg::Odometry>("/wheel/odometry",1);
         odom_pub2 = create_publisher<nav_msgs::msg::Odometry>("/imu_wheel/odometry",1);
-        timer_ = this->create_wall_timer(10ms,std::bind(&robot_converter::timerCallback,this));
+        timer_ = this->create_wall_timer(20ms,std::bind(&robot_converter::timerCallback,this));
 
         time_flag =false;
         fb.ctrl_fb_gear = 0.;
@@ -40,9 +40,9 @@ namespace robot_converter{
     }
 
     void robot_converter::timerCallback(){
-        // RCLCPP_INFO(get_logger(),"timer callback");
+        RCLCPP_INFO(get_logger(),"timer callback");
         time_n = this->now();
-        float dt= 0.01;
+        float dt= 0.02;
         // if(time_flag){dt = (time_n.seconds() - time_o.seconds()) + (time_n.nanoseconds()/1e+9 - time_o.nanoseconds()/1e+9);}
         // else{dt =0.0;}
 
@@ -125,12 +125,38 @@ namespace robot_converter{
     }
     void robot_converter::Cmd_VelReceived(const geometry_msgs::msg::Twist::SharedPtr msg)
     {
+
+
+        if (fabs(msg->linear.y) >0 ){
+        cmd.ctrl_cmd_gear = 7;
+        // RCLCPP_INFO(get_logger(),"msg: x y  %4f , %4f" ,msg->linear.x , msg->linear.y);
+        cmd.ctrl_cmd_linear = sqrt(pow(msg->linear.x,2) +pow(msg->linear.y,2));
+        
+        cmd.ctrl_cmd_angular = 0.0;
+        cmd.ctrl_cmd_slipangle = atan2(msg->linear.y , msg->linear.x) * 57.2958 ;
+        // if (msg->linear.y >0){cmd.ctrl_cmd_slipangle * -1;}
+        // RCLCPP_INFO(get_logger(),"this is slip %4f", cmd.ctrl_cmd_slipangle);
+        // if (abs(cmd.ctrl_cmd_slipangle)>90.)
+        // {
+        //     cmd.ctrl_cmd_linear = cmd.ctrl_cmd_linear * -1 ;
+        //     if(cmd.ctrl_cmd_slipangle >0 ){
+        //         cmd.ctrl_cmd_slipangle = cmd.ctrl_cmd_slipangle - 180;
+        //     }
+        //     else {cmd.ctrl_cmd_slipangle = cmd.ctrl_cmd_slipangle + 180;}
+        // }
+        ctrl_cmd_pub->publish(cmd);
+
+        }
+        else{
         cmd.ctrl_cmd_gear = 6;
         cmd.ctrl_cmd_linear = msg->linear.x;
         cmd.ctrl_cmd_angular = msg->angular.z * 57.2958;
         cmd.ctrl_cmd_slipangle = 0.0;
-
         ctrl_cmd_pub->publish(cmd);
+        
+        }
+
+    //   ctrl_cmd_pub->publish(cmd);
 
     }
 

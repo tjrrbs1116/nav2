@@ -1,0 +1,7 @@
+speed_rate:
+    type: std_msgs/Int32
+    float:
+        to: data
+        min: 0
+        max: 100
+        default: 50

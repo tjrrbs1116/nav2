@@ -30,6 +30,8 @@ from nav2_common.launch import RewrittenYaml
 def generate_launch_description():
     # Get the launch directory
     bringup_dir = get_package_share_directory('seokgyun_bringup')
+    global_dir = get_package_share_directory('piot_localization')
+    global_launch_dir =os.path.join(global_dir, 'launch')
     launch_dir = os.path.join(bringup_dir, 'launch')
     # Create the launch configuration variables
     namespace = LaunchConfiguration('namespace')
@@ -120,7 +122,7 @@ def generate_launch_description():
         description='Automatically startup the nav2 stack')
 
     declare_use_composition_cmd = DeclareLaunchArgument(
-        'use_composition', default_value='False',
+        'use_composition', default_value='True',
         description='Whether to use composed bringup')
 
     declare_use_respawn_cmd = DeclareLaunchArgument(
@@ -157,9 +159,23 @@ def generate_launch_description():
         #                       'use_respawn': use_respawn,
         #                       'params_file': params_file}.items()),
 
+
+            # IncludeLaunchDescription(
+            # PythonLaunchDescriptionSource(os.path.join(global_launch_dir,
+            #                                            'localization_launch.py')),
+            # condition=IfCondition(PythonExpression(['not ', slam])),
+            # launch_arguments={'namespace': namespace,
+            #                   'map': map_yaml_file,
+            #                   'use_sim_time': use_sim_time,
+            #                   'autostart': autostart,
+            #                   'params_file': params_file,
+            #                   'use_composition': use_composition,
+            #                   'use_respawn': use_respawn,
+            #                   'container_name': 'nav2_container'}.items()),
+
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(os.path.join(launch_dir,
-                                                       'localization_launch.py')),
+                                                       'global_localization_launch.py')),
             condition=IfCondition(PythonExpression(['not ', slam])),
             launch_arguments={'namespace': namespace,
                               'map': map_yaml_file,

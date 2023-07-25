@@ -81,15 +81,15 @@ def main():
     goal_pose = PoseStamped()
     goal_pose.header.frame_id = 'map'
     goal_pose.header.stamp = navigator.get_clock().now().to_msg()
-    goal_pose.pose.position.x = -0.2115
-    goal_pose.pose.position.y = -1.1541
+    goal_pose.pose.position.x = -0.26
+    goal_pose.pose.position.y = -1.01
 
-    q= quaternion_from_euler(0,0,75)
+    q= quaternion_from_euler(0,0,-5.2)
 
-    goal_pose.pose.orientation.x = q[0]
-    goal_pose.pose.orientation.y = q[1]
-    goal_pose.pose.orientation.z = q[2]
-    goal_pose.pose.orientation.w = q[3]
+    goal_pose.pose.orientation.x = 0.0
+    goal_pose.pose.orientation.y = 0.0
+    goal_pose.pose.orientation.z = 0.999
+    goal_pose.pose.orientation.w = 0.007
 
     # sanity check a valid path exists
     # path = navigator.getPath(initial_pose, goal_pose)

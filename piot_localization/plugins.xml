@@ -1,0 +1,8 @@
+<library path="motions_lib">
+  <class type="piot_localization::DifferentialMotionModel" base_class_type="piot_localization::MotionModel">
+    <description>This is a diff plugin.</description>
+  </class>
+  <class type="piot_localization::OmniMotionModel" base_class_type="piot_localization::MotionModel">
+    <description>This is a omni plugin.</description>
+  </class>
+</library>
