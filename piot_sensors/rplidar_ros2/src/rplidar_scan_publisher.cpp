@@ -40,6 +40,8 @@
 
 #include <signal.h>
 
+// #define small_world
+
 #ifndef _countof
 #define _countof(_Array) (int)(sizeof(_Array) / sizeof(_Array[0]))
 #endif
@@ -260,8 +262,13 @@ class RPLidarScanPublisher : public rclcpp::Node
         scan_msg->scan_time = scan_time;
         scan_msg->time_increment = scan_time / (double)(node_count-1);
         scan_msg->range_min = 0.15;
+        #ifndef  small_world
         scan_msg->range_max = max_distance;//8.0;
+        #endif
+        #ifdef small_world
+        scan_msg->range_max = 1.0;//8.0;
 
+        #endif
         scan_msg->intensities.resize(node_count);
         scan_msg->ranges.resize(node_count);
         bool reverse_data = (!inverted && reversed) || (inverted && !reversed);
@@ -276,6 +283,7 @@ class RPLidarScanPublisher : public rclcpp::Node
                 scan_msg->intensities[i] = (float) (nodes[i].quality >> 2);
             }
         } else {
+            #ifndef small_world
             for (size_t i = 0; i < node_count; i++) {
                 float read_value = (float)nodes[i].dist_mm_q2/4.0f/1000;
                 //read_value = 0.0;
@@ -285,6 +293,19 @@ class RPLidarScanPublisher : public rclcpp::Node
                     scan_msg->ranges[node_count-1-i] = read_value;
                 scan_msg->intensities[node_count-1-i] = (float) (nodes[i].quality >> 2);
             }
+            #endif
+
+            #ifdef small_world
+                    for (size_t i = 0; i < node_count; i++) {
+                    float read_value = (float)nodes[i].dist_mm_q2/4.0f/1000;
+                    //read_value = 0.0;
+                    if (read_value == 0.0 || read_value >= 1.0)
+                        scan_msg->ranges[node_count-1-i] = std::numeric_limits<float>::infinity();
+                    else
+                        scan_msg->ranges[node_count-1-i] = read_value;
+                    scan_msg->intensities[node_count-1-i] = (float) (nodes[i].quality >> 2);
+                }
+            #endif
         }
 
         pub->publish(*scan_msg);
@@ -433,7 +454,7 @@ public:
                                     int angle_compensate_nodes_index = angle_value-angle_compensate_offset+j;
                                     if(angle_compensate_nodes_index >= angle_compensate_nodes_count) 
                                     angle_compensate_nodes_index = angle_compensate_nodes_count-1;
-                                    // if(angle_compensate_nodes_index >145 && angle_compensate_nodes_index<200){continue;}
+                                    if(angle_compensate_nodes_index >160 && angle_compensate_nodes_index<200){continue;}
                                     // if(angle_compensate_nodes_index >330 && angle_compensate_nodes_index<360){continue;}
                                     angle_compensate_nodes[angle_compensate_nodes_index] = nodes[i];
                                 }

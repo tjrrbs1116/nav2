@@ -432,7 +432,7 @@ AmclNode::getOdomPose(
   x = odom_pose.pose.position.x;
   y = odom_pose.pose.position.y;
   yaw = tf2::getYaw(odom_pose.pose.orientation);
-
+  // RCLCPP_INFO(get_logger(),"getodompose [%4f,%4f,%4f]", x,y,yaw);
   return true;
 }
 
@@ -611,6 +611,7 @@ void
 AmclNode::laserReceived(sensor_msgs::msg::LaserScan::ConstSharedPtr laser_scan)
 {
   std::lock_guard<std::recursive_mutex> cfl(mutex_);
+ 
 
   // Since the sensor data is continually being published by the simulator or robot,
   // we don't want our callbacks to fire until we're in the active state
@@ -649,14 +650,18 @@ AmclNode::laserReceived(sensor_msgs::msg::LaserScan::ConstSharedPtr laser_scan)
     RCLCPP_ERROR(get_logger(), "Couldn't determine robot's pose associated with laser scan");
     return;
   }
+    
+  //pose.v -> odom pose 
 
+  
   pf_vector_t delta = pf_vector_zero();
   bool force_publication = false;
   if (!pf_init_) {
     // Pose at last filter update
+  
     pf_odom_pose_ = pose;
     pf_init_ = true;
-
+    //  RCLCPP_INFO(get_logger(),"now debuging point nownownow");
     for (unsigned int i = 0; i < lasers_update_.size(); i++) {
       lasers_update_[i] = true;
     }
@@ -666,11 +671,16 @@ AmclNode::laserReceived(sensor_msgs::msg::LaserScan::ConstSharedPtr laser_scan)
   } else {
     // Set the laser update flags
     if (shouldUpdateFilter(pose, delta)) {
+      // RCLCPP_INFO(get_logger()," debuging point1");
       for (unsigned int i = 0; i < lasers_update_.size(); i++) {
         lasers_update_[i] = true;
       }
     }
     if (lasers_update_[laser_index]) {
+      //   RCLCPP_INFO(get_logger(),"%d",laser_index);
+      // RCLCPP_INFO(get_logger(),"now debuging point2");
+      // RCLCPP_INFO(get_logger(),"pf_odom_pose [%4f,%4f,%4f]",pf_odom_pose_.v[0],pf_odom_pose_.v[1],pf_odom_pose_.v[2]);
+      // RCLCPP_INFO(get_logger(),"pose is [%4f,%4f,%4f]",pose.v[0],pose.v[1],pose.v[2]);
       motion_model_->odometryUpdate(pf_, pose, delta);
     }
     force_update_ = false;
@@ -684,18 +694,22 @@ AmclNode::laserReceived(sensor_msgs::msg::LaserScan::ConstSharedPtr laser_scan)
 
     // Resample the particles
     if (!(++resample_count_ % resample_interval_)) {
+      //resampling
       pf_update_resample(pf_);
       resampled = true;
+      // RCLCPP_INFO(get_logger(),"debugging point2");
     }
 
     pf_sample_set_t * set = pf_->sets + pf_->current_set;
-    RCLCPP_DEBUG(get_logger(), "Num samples: %d\n", set->sample_count);
+    // RCLCPP_DEBUG(get_logger(), "Num samples: %d\n", set->sample_count);
+    // RCLCPP_INFO(get_logger(),"debugging point3");
 
     if (!force_update_) {
       publishParticleCloud(set);
     }
   }
   if (resampled || force_publication || !first_pose_sent_) {
+    // RCLCPP_INFO(get_logger(),"debugging point4");
     amcl_hyp_t max_weight_hyps;
     std::vector<amcl_hyp_t> hyps;
     int max_weight_hyp = -1;
@@ -765,7 +779,7 @@ bool AmclNode::shouldUpdateFilter(const pf_vector_t pose, pf_vector_t & delta)
   delta.v[0] = pose.v[0] - pf_odom_pose_.v[0];
   delta.v[1] = pose.v[1] - pf_odom_pose_.v[1];
   delta.v[2] = angleutils::angle_diff(pose.v[2], pf_odom_pose_.v[2]);
-
+  // RCLCPP_INFO(get_logger(),"delta.v[0,1,2] [%4f,%4f,%4f]",delta.v[0],delta.v[1],delta.v[2]);          //my
   // See if we should update the filter
   bool update = fabs(delta.v[0]) > d_thresh_ ||
     fabs(delta.v[1]) > d_thresh_ ||
@@ -842,6 +856,7 @@ bool AmclNode::updateFilter(
   }
   lasers_[laser_index]->sensorUpdate(pf_, reinterpret_cast<nav2_amcl::LaserData *>(&ldata));
   lasers_update_[laser_index] = false;
+  // RCLCPP_INFO(get_logger(),"update filter pf-odom_pose [%4f,%4f,%4f]",pf_odom_pose_.v[0],pf_odom_pose_.v[1],pf_odom_pose_.v[2]);
   pf_odom_pose_ = pose;
   return true;
 }
@@ -849,13 +864,15 @@ bool AmclNode::updateFilter(
 void
 AmclNode::publishParticleCloud(const pf_sample_set_t * set)
 {
+
+ 
   // If initial pose is not known, AMCL does not know the current pose
   if (!initial_pose_is_known_) {return;}
   auto cloud_with_weights_msg = std::make_unique<nav2_msgs::msg::ParticleCloud>();
   cloud_with_weights_msg->header.stamp = this->now();
   cloud_with_weights_msg->header.frame_id = global_frame_id_;
   cloud_with_weights_msg->particles.resize(set->sample_count);
-
+   RCLCPP_INFO(get_logger(), "particle count is  %d",set->sample_count);//my
   for (int i = 0; i < set->sample_count; i++) {
     cloud_with_weights_msg->particles[i].pose.position.x = set->samples[i].pose.v[0];
     cloud_with_weights_msg->particles[i].pose.position.y = set->samples[i].pose.v[1];
@@ -876,6 +893,7 @@ AmclNode::getMaxWeightHyp(
   // Read out the current hypotheses
   double max_weight = 0.0;
   hyps.resize(pf_->sets[pf_->current_set].cluster_count);
+  // RCLCPP_INFO(get_logger(), "Cluster_count is %d",pf_->sets[pf_->current_set].cluster_count);//my
   for (int hyp_count = 0;
     hyp_count < pf_->sets[pf_->current_set].cluster_count; hyp_count++)
   {
@@ -890,6 +908,7 @@ AmclNode::getMaxWeightHyp(
     hyps[hyp_count].weight = weight;
     hyps[hyp_count].pf_pose_mean = pose_mean;
     hyps[hyp_count].pf_pose_cov = pose_cov;
+    // RCLCPP_INFO(get_logger(), "hyps[%d] weigth, mean cov [%lf ]",hyp_count,hyps[hyp_count].weight);
 
     if (hyps[hyp_count].weight > max_weight) {
       max_weight = hyps[hyp_count].weight;
@@ -903,6 +922,7 @@ AmclNode::getMaxWeightHyp(
       hyps[max_weight_hyp].pf_pose_mean.v[0],
       hyps[max_weight_hyp].pf_pose_mean.v[1],
       hyps[max_weight_hyp].pf_pose_mean.v[2]);
+
 
     max_weight_hyps = hyps[max_weight_hyp];
     return true;

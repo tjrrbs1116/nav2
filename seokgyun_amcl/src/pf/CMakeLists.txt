@@ -2,6 +2,17 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wno-gnu-folding-constant)
 endif()
 
+
+find_package(rclcpp REQUIRED)
+
+
+set(dependencies
+  rclcpp
+)
+
+
+
+
 add_library(pf_lib SHARED
   pf.c
   pf_kdtree.c
@@ -9,6 +20,12 @@ add_library(pf_lib SHARED
   pf_vector.c
   eig3.c
   pf_draw.c
+ 
+)
+
+
+ament_target_dependencies(pf_lib
+  ${dependencies}
 )
 
 target_include_directories(pf_lib PRIVATE ../include)

@@ -83,8 +83,8 @@
 
 
 
-  <!-- Wheels -->
-  <xacro:macro name="wheel" params="prefix x_reflect y_reflect">
+ 
+  <!-- <xacro:macro name="wheel" params="prefix x_reflect y_reflect">
     <link name="${prefix}_link">
       <visual>
         <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
@@ -100,11 +100,7 @@
     <link name = "${prefix}_virtul_link"/>
 
 
-    <!-- <joint name="{prefix}_virtul_joint" type="fixed">
-      <origin xyz="0.0 0.0 0" rpy="0 0 0"/>
-      <parent link="${prefix}_link"/>
-      <child link="${prefix}_virtul_link"/>
-    </joint> -->
+
 
 
     <joint name="${prefix}_omni_joint" type="continuous">
@@ -121,24 +117,7 @@
       <axis xyz="0 1 0"/>
     </joint>
 
-<!--
-    <link name = "${prefix}_virtul_link"/>
 
-
-    <joint name="${prefix}_omni_joint" type="continuous">
-      <parent link="base_link"/>
-      <child link="${prefix}_virtul_link">
-      <origin xyz="${x_reflect*wheel_xoff} ${y_reflect*wheel_ygap} ${-wheel_zoff}" rpy="0 0 0"/>
-      <axis xyz="0 0 1"/>
-    </joint>
-
-
-    <joint name="${prefix}_joint" type="continuous">
-      <parent link="${prefix}_virtul_link"/>
-      <child link="${prefix}_link"/>
-      <origin xyz="${x_reflect*wheel_xoff} ${y_reflect*wheel_ygap} ${-wheel_zoff}" rpy="0 0 0"/>
-      <axis xyz="0 1 0"/>
-    </joint> -->
 
 
   </xacro:macro>
@@ -146,7 +125,7 @@
   <xacro:wheel prefix="drivewhl_fl" x_reflect="1" y_reflect="1" />
   <xacro:wheel prefix="drivewhl_fr" x_reflect="1" y_reflect="-1" />
   <xacro:wheel prefix="drivewhl_rl" x_reflect="-1" y_reflect="1" />
-  <xacro:wheel prefix="drivewhl_rr" x_reflect="-1" y_reflect="-1" />
+  <xacro:wheel prefix="drivewhl_rr" x_reflect="-1" y_reflect="-1" /> -->
 
 
 

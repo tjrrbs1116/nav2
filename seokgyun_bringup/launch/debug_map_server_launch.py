@@ -45,7 +45,7 @@ def generate_launch_description():
     map_dir = LaunchConfiguration(
         'map',
        default=os.path.join(
-            bringup_dir, 'maps', 'f1.yaml')) #map3
+            bringup_dir, 'maps', 'f1_observe.yaml')) #map3
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
     # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
     # https://github.com/ros/geometry2/issues/32

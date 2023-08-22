@@ -14,12 +14,12 @@ argu1 =['/scan','/imu_sensing','/wheel/odomtry']
 bringup_dir = get_package_share_directory('seokgyun_bringup')
 launch_dir = os.path.join(bringup_dir, 'launch')
 
-
+#rosbag2_2023_07_26
 def generate_launch_description():
     return LaunchDescription(
         [
             ExecuteProcess(
-                cmd=['ros2','bag','play','rosbag/navigation/navigation_0.db3', '--topics' , '/scan','/imu_sensing','/ctrl_fb','/imu' ,'/initialpose' ],
+                cmd=['ros2','bag','play','hangang_waypoint_amcl_module2/hangang_waypoint_amcl_module2_0.db3', '--topics' , '/scan','/imu_sensing','/ctrl_fb','/imu' ,'/initialpose' ],
                 output="screen"
             ),
 
@@ -31,10 +31,14 @@ def generate_launch_description():
             PythonLaunchDescriptionSource([launch_dir, '/rviz_launch.py']),
         ),
 
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                [ThisLaunchFileDir(), '/state_publisher_launch.py'])
-        )
+            IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([launch_dir, '/local_localization_launch.py']),
+        ),
+
+
+            IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([launch_dir, '/state_publisher_launch.py']),
+        ),
         ]
 
         

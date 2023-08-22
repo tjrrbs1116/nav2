@@ -151,7 +151,7 @@ def generate_launch_description():
                 parameters=[configured_params],
                 remappings=remappings),
             ComposableNode(
-                package='nav2_amcl',
+                package='seokgyun_amcl',
                 plugin='nav2_amcl::AmclNode',
                 name='amcl',
                 parameters=[configured_params],

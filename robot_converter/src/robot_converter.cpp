@@ -4,7 +4,6 @@ using namespace std::chrono_literals;
 
 namespace robot_converter{
 
-
     robot_converter::robot_converter(const rclcpp::NodeOptions & options)
     : Node("robot_converter", options)
     {
@@ -27,7 +26,7 @@ namespace robot_converter{
 
         ctrl_cmd_pub = create_publisher<piot_can_msgs::msg::CtrlCmd>("ctrl_cmd",1);
         odom_pub = create_publisher<nav_msgs::msg::Odometry>("/wheel/odometry",1);
-        odom_pub2 = create_publisher<nav_msgs::msg::Odometry>("/imu_wheel/odometry",1);
+        odom_pub2 = create_publisher<nav_msgs::msg::Odometry>("/debug/odometry",1);
         timer_ = this->create_wall_timer(20ms,std::bind(&robot_converter::timerCallback,this));
 
         time_flag =false;
@@ -40,7 +39,7 @@ namespace robot_converter{
     }
 
     void robot_converter::timerCallback(){
-        RCLCPP_INFO(get_logger(),"timer callback");
+        // RCLCPP_INFO(get_logger(),"timer callback");
         time_n = this->now();
         float dt= 0.02;
         // if(time_flag){dt = (time_n.seconds() - time_o.seconds()) + (time_n.nanoseconds()/1e+9 - time_o.nanoseconds()/1e+9);}
@@ -95,31 +94,34 @@ namespace robot_converter{
         {odom.twist.covariance[i] =twist_covariance[i];}
 
         odom_pub->publish(odom);
-
+        //  RCLCPP_INFO(get_logger(),"now");
         #ifdef imu_wheel
 
         odom2.header.stamp = this->now();
-        odom2.header.frame_id = "odom";
-        odom2.child_frame_id = "base_link2";
+        odom2.header.frame_id = "odom2";
+        odom2.child_frame_id = "base_footprint2";
 
-        odom2.pose.pose.position.x = c_robot2.x;
-        odom2.pose.pose.position.y = c_robot2.y;
+        odom2.pose.pose.position.x = c_robot.x;
+        odom2.pose.pose.position.y = c_robot.y;
         odom2.pose.pose.position.z = 0.0;
 
-        odom2.twist.twist.linear.x = c_robot2.v_x;
-        odom2.twist.twist.linear.y = c_robot2.v_y;
-        odom2.twist.twist.angular.z = c_robot2.v_th;
+        odom2.twist.twist.linear.x = c_robot.v_x;
+        odom2.twist.twist.linear.y = c_robot.v_y;
+        odom2.twist.twist.angular.z = c_robot.v_th;
 
-        odom2.pose.pose.orientation.x = current_imu.orientation.x;
-        odom2.pose.pose.orientation.y = current_imu.orientation.y;
-        odom2.pose.pose.orientation.z = current_imu.orientation.z;
-        odom2.pose.pose.orientation.w = current_imu.orientation.w;
+        odom2.pose.pose.orientation.x = quaternion[0];
+        odom2.pose.pose.orientation.y = quaternion[1];
+        odom2.pose.pose.orientation.z = quaternion[2];
+        odom2.pose.pose.orientation.w = quaternion[3];
 
         for(int i=0; i<36; i++)
         {odom2.pose.covariance[i] = pose_covariance[i];}
         for(int i=0; i<36; i++)
         {odom2.twist.covariance[i] =twist_covariance[i];}
+
+
         odom_pub2->publish(odom2);
+        //  RCLCPP_INFO(get_logger(),"now2");
         #endif
 
     }
@@ -168,7 +170,7 @@ namespace robot_converter{
     void robot_converter::CtrlFb_Received(const piot_can_msgs::msg::CtrlFb::SharedPtr msg)
     {
         fb = *msg;
-        if (fb.ctrl_fb_gear ==6 ){
+        if (fb.ctrl_fb_gear == 6 ){
             c_robot.v_x = fb.ctrl_fb_linear ;
             c_robot.v_y = 0.0;
             c_robot.v_th = fb.ctrl_fb_angular * 0.0174533; //deg2rad

@@ -31,6 +31,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+
 #include "nav2_amcl/pf/pf.hpp"
 #include "nav2_amcl/pf/pf_pdf.hpp"
 #include "nav2_amcl/pf/pf_kdtree.hpp"
@@ -254,7 +255,7 @@ void pf_update_sensor(pf_t * pf, pf_sensor_model_fn_t sensor_fn, void * sensor_d
   pf_sample_set_t * set;
   pf_sample_t * sample;
   double total;
-
+  // RCLCPP_INFO(get_logger(),"this is");
   set = pf->sets + pf->current_set;
 
   // Compute the sample weights

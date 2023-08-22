@@ -16,7 +16,7 @@ def generate_launch_description():
 
     robot_localization_pkg_dir = LaunchConfiguration(
         'robot_localization_pkg_dir',
-        default=os.path.join(get_package_share_directory('piot_robot_localization'),'launch'))
+        default=os.path.join(get_package_share_directory('seokgyun_robot_localization'),'launch'))
 
 
     converter_pkg_dir = LaunchConfiguration(
@@ -26,7 +26,7 @@ def generate_launch_description():
 
     return LaunchDescription([
 
-        ## only lidar +imu
+        ## only lidar +imusou   ./i 
 
         # IncludeLaunchDescription(
         #     PythonLaunchDescriptionSource([robot_localization_pkg_dir, '/robot_localization_launch.py']),

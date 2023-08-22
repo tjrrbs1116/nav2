@@ -64,6 +64,12 @@ def generate_launch_description():
             launch_arguments={'use_sim_time': use_sim_time}.items(),
         ),
 
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource(
+        #         [ThisLaunchFileDir(), '/debug_frame_publisher_launch.py']),
+        #     launch_arguments={'use_sim_time': use_sim_time}.items(),
+        # ),
+
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([can_control_pkg_dir, '/can_control_launch.py']),
         ),
@@ -91,7 +97,7 @@ def generate_launch_description():
         # IncludeLaunchDescription(
         #     PythonLaunchDescriptionSource([gps_pkg_dir, '/ublox_gps_node_rover-launch.py']),
         # ),
-        # ############################
+        #############################
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([lidar_pkg_dir, '/rplidar_s2_launch.py']),
@@ -109,7 +115,7 @@ def generate_launch_description():
         #     PythonLaunchDescriptionSource([imu_filter_madgwick, '/imu_filter.launch.py']),
         # ),
 
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([depth_camera_pkg_dir, '/dabai.launch.py']),
-        ),
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource([depth_camera_pkg_dir, '/dabai.launch.py']),
+        # ),
     ])

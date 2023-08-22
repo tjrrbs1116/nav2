@@ -43,7 +43,7 @@ def generate_launch_description():
     map_dir = LaunchConfiguration(
         'map',
        default=os.path.join(
-            bringup_dir, 'maps', 'f1.yaml')) #map3
+            bringup_dir, 'maps', 'f1_observe.yaml')) #map3
 
 
     params_file = LaunchConfiguration(
@@ -122,7 +122,7 @@ def generate_launch_description():
         description='Automatically startup the nav2 stack')
 
     declare_use_composition_cmd = DeclareLaunchArgument(
-        'use_composition', default_value='True',
+        'use_composition', default_value='False',
         description='Whether to use composed bringup')
 
     declare_use_respawn_cmd = DeclareLaunchArgument(
